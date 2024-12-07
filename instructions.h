@@ -2,334 +2,335 @@
 struct m6502;
 
 enum address_mode {
-    ABSOLUTE,
-    IMMEDIATE,
-    IND_ZERO_PAGE_X,
-    ZERO_PAGE,
-    IMPLIED,
-    ABSOLUTE_Y,
     ABSOLUTE_X,
-    ZERO_PAGE_X,
     IND_ZERO_PAGE_Y,
+    ZERO_PAGE,
+    IMMEDIATE,
+    ABSOLUTE,
+    IMPLIED,
+    ZERO_PAGE_X,
+    IND_ZERO_PAGE_X,
+    ABSOLUTE_Y,
 };
 
+void inst_AND(struct m6502 *proc, enum address_mode mode);
+void inst_BPL(struct m6502 *proc, enum address_mode mode);
+void inst_SEC(struct m6502 *proc, enum address_mode mode);
+void inst_DEY(struct m6502 *proc, enum address_mode mode);
 void inst_RTI(struct m6502 *proc, enum address_mode mode);
-void inst_PHA(struct m6502 *proc, enum address_mode mode);
-void inst_STA(struct m6502 *proc, enum address_mode mode);
-void inst_LDY(struct m6502 *proc, enum address_mode mode);
-void inst_PLP(struct m6502 *proc, enum address_mode mode);
-void inst_BVC(struct m6502 *proc, enum address_mode mode);
-void inst_LDA(struct m6502 *proc, enum address_mode mode);
-void inst_BNE(struct m6502 *proc, enum address_mode mode);
-void inst_BCS(struct m6502 *proc, enum address_mode mode);
-void inst_TAY(struct m6502 *proc, enum address_mode mode);
-void inst_CMP(struct m6502 *proc, enum address_mode mode);
-void inst_NOP(struct m6502 *proc, enum address_mode mode);
-void inst_CPX(struct m6502 *proc, enum address_mode mode);
-void inst_LDX(struct m6502 *proc, enum address_mode mode);
-void inst_SBC(struct m6502 *proc, enum address_mode mode);
-void inst_CLD(struct m6502 *proc, enum address_mode mode);
-void inst_INY(struct m6502 *proc, enum address_mode mode);
-void inst_TYA(struct m6502 *proc, enum address_mode mode);
 void inst_SEI(struct m6502 *proc, enum address_mode mode);
-void inst_CLC(struct m6502 *proc, enum address_mode mode);
+void inst_DEX(struct m6502 *proc, enum address_mode mode);
+void inst_INX(struct m6502 *proc, enum address_mode mode);
+void inst_INVALID(struct m6502 *proc, enum address_mode mode);
+void inst_STY(struct m6502 *proc, enum address_mode mode);
+void inst_BVC(struct m6502 *proc, enum address_mode mode);
+void inst_STA(struct m6502 *proc, enum address_mode mode);
+void inst_LDA(struct m6502 *proc, enum address_mode mode);
+void inst_CLI(struct m6502 *proc, enum address_mode mode);
+void inst_NOP(struct m6502 *proc, enum address_mode mode);
+void inst_STX(struct m6502 *proc, enum address_mode mode);
+void inst_JSR(struct m6502 *proc, enum address_mode mode);
+void inst_BEQ(struct m6502 *proc, enum address_mode mode);
+void inst_PHP(struct m6502 *proc, enum address_mode mode);
+void inst_CMP(struct m6502 *proc, enum address_mode mode);
+void inst_ROL(struct m6502 *proc, enum address_mode mode);
+void inst_JMP(struct m6502 *proc, enum address_mode mode);
+void inst_TAY(struct m6502 *proc, enum address_mode mode);
+void inst_LDY(struct m6502 *proc, enum address_mode mode);
+void inst_INC(struct m6502 *proc, enum address_mode mode);
+void inst_SED(struct m6502 *proc, enum address_mode mode);
+void inst_ASL(struct m6502 *proc, enum address_mode mode);
+void inst_ROR(struct m6502 *proc, enum address_mode mode);
+void inst_BIT(struct m6502 *proc, enum address_mode mode);
+void inst_BMI(struct m6502 *proc, enum address_mode mode);
+void inst_CLD(struct m6502 *proc, enum address_mode mode);
 void inst_TXA(struct m6502 *proc, enum address_mode mode);
+void inst_SBC(struct m6502 *proc, enum address_mode mode);
+void inst_CPY(struct m6502 *proc, enum address_mode mode);
+void inst_CPX(struct m6502 *proc, enum address_mode mode);
+void inst_BCS(struct m6502 *proc, enum address_mode mode);
+void inst_EOR(struct m6502 *proc, enum address_mode mode);
+void inst_BCC(struct m6502 *proc, enum address_mode mode);
+void inst_TXS(struct m6502 *proc, enum address_mode mode);
+void inst_RTS(struct m6502 *proc, enum address_mode mode);
+void inst_CLV(struct m6502 *proc, enum address_mode mode);
+void inst_ORA(struct m6502 *proc, enum address_mode mode);
+void inst_PLA(struct m6502 *proc, enum address_mode mode);
+void inst_TYA(struct m6502 *proc, enum address_mode mode);
+void inst_TSX(struct m6502 *proc, enum address_mode mode);
+void inst_DEC(struct m6502 *proc, enum address_mode mode);
+void inst_LDX(struct m6502 *proc, enum address_mode mode);
+void inst_TAX(struct m6502 *proc, enum address_mode mode);
+void inst_PLP(struct m6502 *proc, enum address_mode mode);
+void inst_INY(struct m6502 *proc, enum address_mode mode);
+void inst_BNE(struct m6502 *proc, enum address_mode mode);
+void inst_CLC(struct m6502 *proc, enum address_mode mode);
+void inst_LSR(struct m6502 *proc, enum address_mode mode);
+void inst_BVS(struct m6502 *proc, enum address_mode mode);
+void inst_PHA(struct m6502 *proc, enum address_mode mode);
 void inst_ADC(struct m6502 *proc, enum address_mode mode);
 void inst_BRK(struct m6502 *proc, enum address_mode mode);
-void inst_BPL(struct m6502 *proc, enum address_mode mode);
-void inst_STY(struct m6502 *proc, enum address_mode mode);
-void inst_ASL(struct m6502 *proc, enum address_mode mode);
-void inst_BEQ(struct m6502 *proc, enum address_mode mode);
-void inst_SED(struct m6502 *proc, enum address_mode mode);
-void inst_LSR(struct m6502 *proc, enum address_mode mode);
-void inst_JSR(struct m6502 *proc, enum address_mode mode);
-void inst_CLI(struct m6502 *proc, enum address_mode mode);
-void inst_EOR(struct m6502 *proc, enum address_mode mode);
-void inst_DEC(struct m6502 *proc, enum address_mode mode);
-void inst_BCC(struct m6502 *proc, enum address_mode mode);
-void inst_CLV(struct m6502 *proc, enum address_mode mode);
-void inst_DEY(struct m6502 *proc, enum address_mode mode);
-void inst_JMP(struct m6502 *proc, enum address_mode mode);
-void inst_BMI(struct m6502 *proc, enum address_mode mode);
-void inst_INX(struct m6502 *proc, enum address_mode mode);
-void inst_BIT(struct m6502 *proc, enum address_mode mode);
-void inst_ROR(struct m6502 *proc, enum address_mode mode);
-void inst_TAX(struct m6502 *proc, enum address_mode mode);
-void inst_SEC(struct m6502 *proc, enum address_mode mode);
-void inst_PLA(struct m6502 *proc, enum address_mode mode);
-void inst_ROL(struct m6502 *proc, enum address_mode mode);
-void inst_CPY(struct m6502 *proc, enum address_mode mode);
-void inst_TXS(struct m6502 *proc, enum address_mode mode);
-void inst_INVALID(struct m6502 *proc, enum address_mode mode);
-void inst_BVS(struct m6502 *proc, enum address_mode mode);
-void inst_ORA(struct m6502 *proc, enum address_mode mode);
-void inst_STX(struct m6502 *proc, enum address_mode mode);
-void inst_TSX(struct m6502 *proc, enum address_mode mode);
-void inst_DEX(struct m6502 *proc, enum address_mode mode);
-void inst_AND(struct m6502 *proc, enum address_mode mode);
-void inst_RTS(struct m6502 *proc, enum address_mode mode);
-void inst_INC(struct m6502 *proc, enum address_mode mode);
-void inst_PHP(struct m6502 *proc, enum address_mode mode);
 
 struct instruction {
     enum address_mode mode;
     void (*func)(struct m6502 *proc, enum address_mode mode);
+    const char *mnemonic;
 };
 
 const struct instruction INSTRUCTIONS[] = {
-    { IMMEDIATE, inst_BRK },            // 0x0
-    { IND_ZERO_PAGE_X, inst_ORA },
-    { IMMEDIATE, inst_ASL },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE, inst_INVALID },
-    { ZERO_PAGE, inst_ORA },
-    { ZERO_PAGE, inst_ASL },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_PHP },
-    { IMMEDIATE, inst_ORA },
-    { IMPLIED, inst_ASL },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE, inst_INVALID },
-    { ABSOLUTE, inst_ORA },
-    { ABSOLUTE, inst_ASL },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_BPL },              // 0x10
-    { IND_ZERO_PAGE_Y, inst_ORA },
-    { IMPLIED, inst_ASL },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE_X, inst_INVALID },
-    { ZERO_PAGE_X, inst_ORA },
-    { ZERO_PAGE_X, inst_ASL },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_CLC },
-    { ABSOLUTE_X, inst_ORA },
-    { IMPLIED, inst_ASL },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE_X, inst_INVALID },
-    { ABSOLUTE_Y, inst_ORA },
-    { ABSOLUTE_X, inst_ASL },
-    { IMPLIED, inst_INVALID },
-    { IMMEDIATE, inst_JSR },            // 0x20
-    { IND_ZERO_PAGE_X, inst_AND },
-    { IMMEDIATE, inst_ROL },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE, inst_BIT },
-    { ZERO_PAGE, inst_AND },
-    { ZERO_PAGE, inst_ROL },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_PLP },
-    { IMMEDIATE, inst_AND },
-    { IMPLIED, inst_ROL },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE, inst_BIT },
-    { ABSOLUTE, inst_AND },
-    { ABSOLUTE, inst_ROL },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_BMI },              // 0x30
-    { IND_ZERO_PAGE_Y, inst_AND },
-    { IMPLIED, inst_ROL },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE_X, inst_BIT },
-    { ZERO_PAGE_X, inst_AND },
-    { ZERO_PAGE_X, inst_ROL },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_SEC },
-    { ABSOLUTE_X, inst_AND },
-    { IMPLIED, inst_ROL },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE_X, inst_BIT },
-    { ABSOLUTE_Y, inst_AND },
-    { ABSOLUTE_X, inst_ROL },
-    { IMPLIED, inst_INVALID },
-    { IMMEDIATE, inst_RTI },            // 0x40
-    { IND_ZERO_PAGE_X, inst_EOR },
-    { IMMEDIATE, inst_LSR },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE, inst_JMP },
-    { ZERO_PAGE, inst_EOR },
-    { ZERO_PAGE, inst_LSR },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_PHA },
-    { IMMEDIATE, inst_EOR },
-    { IMPLIED, inst_LSR },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE, inst_JMP },
-    { ABSOLUTE, inst_EOR },
-    { ABSOLUTE, inst_LSR },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_BVC },              // 0x50
-    { IND_ZERO_PAGE_Y, inst_EOR },
-    { IMPLIED, inst_LSR },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE_X, inst_JMP },
-    { ZERO_PAGE_X, inst_EOR },
-    { ZERO_PAGE_X, inst_LSR },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_CLI },
-    { ABSOLUTE_X, inst_EOR },
-    { IMPLIED, inst_LSR },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE_X, inst_JMP },
-    { ABSOLUTE_Y, inst_EOR },
-    { ABSOLUTE_X, inst_LSR },
-    { IMPLIED, inst_INVALID },
-    { IMMEDIATE, inst_RTS },            // 0x60
-    { IND_ZERO_PAGE_X, inst_ADC },
-    { IMMEDIATE, inst_ROR },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE, inst_JMP },
-    { ZERO_PAGE, inst_ADC },
-    { ZERO_PAGE, inst_ROR },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_PLA },
-    { IMMEDIATE, inst_ADC },
-    { IMPLIED, inst_ROR },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE, inst_JMP },
-    { ABSOLUTE, inst_ADC },
-    { ABSOLUTE, inst_ROR },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_BVS },              // 0x70
-    { IND_ZERO_PAGE_Y, inst_ADC },
-    { IMPLIED, inst_ROR },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE_X, inst_JMP },
-    { ZERO_PAGE_X, inst_ADC },
-    { ZERO_PAGE_X, inst_ROR },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_SEI },
-    { ABSOLUTE_X, inst_ADC },
-    { IMPLIED, inst_ROR },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE_X, inst_JMP },
-    { ABSOLUTE_Y, inst_ADC },
-    { ABSOLUTE_X, inst_ROR },
-    { IMPLIED, inst_INVALID },
-    { IMMEDIATE, inst_STY },            // 0x80
-    { IND_ZERO_PAGE_X, inst_STA },
-    { IMMEDIATE, inst_STX },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE, inst_STY },
-    { ZERO_PAGE, inst_STA },
-    { ZERO_PAGE, inst_STX },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_DEY },
-    { IMMEDIATE, inst_STA },
-    { IMPLIED, inst_TXA },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE, inst_STY },
-    { ABSOLUTE, inst_STA },
-    { ABSOLUTE, inst_STX },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_BCC },              // 0x90
-    { IND_ZERO_PAGE_Y, inst_STA },
-    { IMPLIED, inst_STX },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE_X, inst_STY },
-    { ZERO_PAGE_X, inst_STA },
-    { ZERO_PAGE_X, inst_STX },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_TYA },
-    { ABSOLUTE_X, inst_STA },
-    { IMPLIED, inst_TXS },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE_X, inst_STY },
-    { ABSOLUTE_Y, inst_STA },
-    { ABSOLUTE_X, inst_STX },
-    { IMPLIED, inst_INVALID },
-    { IMMEDIATE, inst_LDY },            // 0xa0
-    { IND_ZERO_PAGE_X, inst_LDA },
-    { IMMEDIATE, inst_LDX },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE, inst_LDY },
-    { ZERO_PAGE, inst_LDA },
-    { ZERO_PAGE, inst_LDX },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_TAY },
-    { IMMEDIATE, inst_LDA },
-    { IMPLIED, inst_TAX },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE, inst_LDY },
-    { ABSOLUTE, inst_LDA },
-    { ABSOLUTE, inst_LDX },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_BCS },              // 0xb0
-    { IND_ZERO_PAGE_Y, inst_LDA },
-    { IMPLIED, inst_LDX },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE_X, inst_LDY },
-    { ZERO_PAGE_X, inst_LDA },
-    { ZERO_PAGE_X, inst_LDX },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_CLV },
-    { ABSOLUTE_X, inst_LDA },
-    { IMPLIED, inst_TSX },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE_X, inst_LDY },
-    { ABSOLUTE_Y, inst_LDA },
-    { ABSOLUTE_X, inst_LDX },
-    { IMPLIED, inst_INVALID },
-    { IMMEDIATE, inst_CPY },            // 0xc0
-    { IND_ZERO_PAGE_X, inst_CMP },
-    { IMMEDIATE, inst_DEC },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE, inst_CPY },
-    { ZERO_PAGE, inst_CMP },
-    { ZERO_PAGE, inst_DEC },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_INY },
-    { IMMEDIATE, inst_CMP },
-    { IMPLIED, inst_DEX },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE, inst_CPY },
-    { ABSOLUTE, inst_CMP },
-    { ABSOLUTE, inst_DEC },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_BNE },              // 0xd0
-    { IND_ZERO_PAGE_Y, inst_CMP },
-    { IMPLIED, inst_DEC },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE_X, inst_CPY },
-    { ZERO_PAGE_X, inst_CMP },
-    { ZERO_PAGE_X, inst_DEC },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_CLD },
-    { ABSOLUTE_X, inst_CMP },
-    { IMPLIED, inst_DEC },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE_X, inst_CPY },
-    { ABSOLUTE_Y, inst_CMP },
-    { ABSOLUTE_X, inst_DEC },
-    { IMPLIED, inst_INVALID },
-    { IMMEDIATE, inst_CPX },            // 0xe0
-    { IND_ZERO_PAGE_X, inst_SBC },
-    { IMMEDIATE, inst_INC },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE, inst_CPX },
-    { ZERO_PAGE, inst_SBC },
-    { ZERO_PAGE, inst_INC },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_INX },
-    { IMMEDIATE, inst_SBC },
-    { IMPLIED, inst_NOP },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE, inst_CPX },
-    { ABSOLUTE, inst_SBC },
-    { ABSOLUTE, inst_INC },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_BEQ },              // 0xf0
-    { IND_ZERO_PAGE_Y, inst_SBC },
-    { IMPLIED, inst_INC },
-    { IMPLIED, inst_INVALID },
-    { ZERO_PAGE_X, inst_CPX },
-    { ZERO_PAGE_X, inst_SBC },
-    { ZERO_PAGE_X, inst_INC },
-    { IMPLIED, inst_INVALID },
-    { IMPLIED, inst_SED },
-    { ABSOLUTE_X, inst_SBC },
-    { IMPLIED, inst_INC },
-    { IMPLIED, inst_INVALID },
-    { ABSOLUTE_X, inst_CPX },
-    { ABSOLUTE_Y, inst_SBC },
-    { ABSOLUTE_X, inst_INC },
+    { IMPLIED, inst_BRK, "BRK" },       // 0x0
+    { IND_ZERO_PAGE_X, inst_ORA, "ORA" },
+    { IMMEDIATE, inst_ASL, "ASL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE, inst_INVALID, "???" },
+    { ZERO_PAGE, inst_ORA, "ORA" },
+    { ZERO_PAGE, inst_ASL, "ASL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_PHP, "PHP" },
+    { IMMEDIATE, inst_ORA, "ORA" },
+    { IMPLIED, inst_ASL, "ASL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE, inst_INVALID, "???" },
+    { ABSOLUTE, inst_ORA, "ORA" },
+    { ABSOLUTE, inst_ASL, "ASL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_BPL, "BPL" },       // 0x10
+    { IND_ZERO_PAGE_Y, inst_ORA, "ORA" },
+    { IMPLIED, inst_ASL, "ASL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE_X, inst_INVALID, "???" },
+    { ZERO_PAGE_X, inst_ORA, "ORA" },
+    { ZERO_PAGE_X, inst_ASL, "ASL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_CLC, "CLC" },
+    { ABSOLUTE_X, inst_ORA, "ORA" },
+    { IMPLIED, inst_ASL, "ASL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE_X, inst_INVALID, "???" },
+    { ABSOLUTE_Y, inst_ORA, "ORA" },
+    { ABSOLUTE_X, inst_ASL, "ASL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_JSR, "JSR" },       // 0x20
+    { IND_ZERO_PAGE_X, inst_AND, "AND" },
+    { IMMEDIATE, inst_ROL, "ROL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE, inst_BIT, "BIT" },
+    { ZERO_PAGE, inst_AND, "AND" },
+    { ZERO_PAGE, inst_ROL, "ROL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_PLP, "PLP" },
+    { IMMEDIATE, inst_AND, "AND" },
+    { IMPLIED, inst_ROL, "ROL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE, inst_BIT, "BIT" },
+    { ABSOLUTE, inst_AND, "AND" },
+    { ABSOLUTE, inst_ROL, "ROL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_BMI, "BMI" },       // 0x30
+    { IND_ZERO_PAGE_Y, inst_AND, "AND" },
+    { IMPLIED, inst_ROL, "ROL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE_X, inst_BIT, "BIT" },
+    { ZERO_PAGE_X, inst_AND, "AND" },
+    { ZERO_PAGE_X, inst_ROL, "ROL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_SEC, "SEC" },
+    { ABSOLUTE_X, inst_AND, "AND" },
+    { IMPLIED, inst_ROL, "ROL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE_X, inst_BIT, "BIT" },
+    { ABSOLUTE_Y, inst_AND, "AND" },
+    { ABSOLUTE_X, inst_ROL, "ROL" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_RTI, "RTI" },       // 0x40
+    { IND_ZERO_PAGE_X, inst_EOR, "EOR" },
+    { IMMEDIATE, inst_LSR, "LSR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE, inst_JMP, "JMP" },
+    { ZERO_PAGE, inst_EOR, "EOR" },
+    { ZERO_PAGE, inst_LSR, "LSR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_PHA, "PHA" },
+    { IMMEDIATE, inst_EOR, "EOR" },
+    { IMPLIED, inst_LSR, "LSR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE, inst_JMP, "JMP" },
+    { ABSOLUTE, inst_EOR, "EOR" },
+    { ABSOLUTE, inst_LSR, "LSR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_BVC, "BVC" },       // 0x50
+    { IND_ZERO_PAGE_Y, inst_EOR, "EOR" },
+    { IMPLIED, inst_LSR, "LSR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE_X, inst_JMP, "JMP" },
+    { ZERO_PAGE_X, inst_EOR, "EOR" },
+    { ZERO_PAGE_X, inst_LSR, "LSR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_CLI, "CLI" },
+    { ABSOLUTE_X, inst_EOR, "EOR" },
+    { IMPLIED, inst_LSR, "LSR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE_X, inst_JMP, "JMP" },
+    { ABSOLUTE_Y, inst_EOR, "EOR" },
+    { ABSOLUTE_X, inst_LSR, "LSR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_RTS, "RTS" },       // 0x60
+    { IND_ZERO_PAGE_X, inst_ADC, "ADC" },
+    { IMMEDIATE, inst_ROR, "ROR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE, inst_JMP, "JMP" },
+    { ZERO_PAGE, inst_ADC, "ADC" },
+    { ZERO_PAGE, inst_ROR, "ROR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_PLA, "PLA" },
+    { IMMEDIATE, inst_ADC, "ADC" },
+    { IMPLIED, inst_ROR, "ROR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE, inst_JMP, "JMP" },
+    { ABSOLUTE, inst_ADC, "ADC" },
+    { ABSOLUTE, inst_ROR, "ROR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_BVS, "BVS" },       // 0x70
+    { IND_ZERO_PAGE_Y, inst_ADC, "ADC" },
+    { IMPLIED, inst_ROR, "ROR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE_X, inst_JMP, "JMP" },
+    { ZERO_PAGE_X, inst_ADC, "ADC" },
+    { ZERO_PAGE_X, inst_ROR, "ROR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_SEI, "SEI" },
+    { ABSOLUTE_X, inst_ADC, "ADC" },
+    { IMPLIED, inst_ROR, "ROR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE_X, inst_JMP, "JMP" },
+    { ABSOLUTE_Y, inst_ADC, "ADC" },
+    { ABSOLUTE_X, inst_ROR, "ROR" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMMEDIATE, inst_STY, "STY" },     // 0x80
+    { IND_ZERO_PAGE_X, inst_STA, "STA" },
+    { IMMEDIATE, inst_STX, "STX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE, inst_STY, "STY" },
+    { ZERO_PAGE, inst_STA, "STA" },
+    { ZERO_PAGE, inst_STX, "STX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_DEY, "DEY" },
+    { IMMEDIATE, inst_STA, "STA" },
+    { IMPLIED, inst_TXA, "TXA" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE, inst_STY, "STY" },
+    { ABSOLUTE, inst_STA, "STA" },
+    { ABSOLUTE, inst_STX, "STX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_BCC, "BCC" },       // 0x90
+    { IND_ZERO_PAGE_Y, inst_STA, "STA" },
+    { IMPLIED, inst_STX, "STX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE_X, inst_STY, "STY" },
+    { ZERO_PAGE_X, inst_STA, "STA" },
+    { ZERO_PAGE_X, inst_STX, "STX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_TYA, "TYA" },
+    { ABSOLUTE_X, inst_STA, "STA" },
+    { IMPLIED, inst_TXS, "TXS" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE_X, inst_STY, "STY" },
+    { ABSOLUTE_Y, inst_STA, "STA" },
+    { ABSOLUTE_X, inst_STX, "STX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMMEDIATE, inst_LDY, "LDY" },     // 0xa0
+    { IND_ZERO_PAGE_X, inst_LDA, "LDA" },
+    { IMMEDIATE, inst_LDX, "LDX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE, inst_LDY, "LDY" },
+    { ZERO_PAGE, inst_LDA, "LDA" },
+    { ZERO_PAGE, inst_LDX, "LDX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_TAY, "TAY" },
+    { IMMEDIATE, inst_LDA, "LDA" },
+    { IMPLIED, inst_TAX, "TAX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE, inst_LDY, "LDY" },
+    { ABSOLUTE, inst_LDA, "LDA" },
+    { ABSOLUTE, inst_LDX, "LDX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_BCS, "BCS" },       // 0xb0
+    { IND_ZERO_PAGE_Y, inst_LDA, "LDA" },
+    { IMPLIED, inst_LDX, "LDX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE_X, inst_LDY, "LDY" },
+    { ZERO_PAGE_X, inst_LDA, "LDA" },
+    { ZERO_PAGE_X, inst_LDX, "LDX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_CLV, "CLV" },
+    { ABSOLUTE_X, inst_LDA, "LDA" },
+    { IMPLIED, inst_TSX, "TSX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE_X, inst_LDY, "LDY" },
+    { ABSOLUTE_Y, inst_LDA, "LDA" },
+    { ABSOLUTE_X, inst_LDX, "LDX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMMEDIATE, inst_CPY, "CPY" },     // 0xc0
+    { IND_ZERO_PAGE_X, inst_CMP, "CMP" },
+    { IMMEDIATE, inst_DEC, "DEC" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE, inst_CPY, "CPY" },
+    { ZERO_PAGE, inst_CMP, "CMP" },
+    { ZERO_PAGE, inst_DEC, "DEC" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_INY, "INY" },
+    { IMMEDIATE, inst_CMP, "CMP" },
+    { IMPLIED, inst_DEX, "DEX" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE, inst_CPY, "CPY" },
+    { ABSOLUTE, inst_CMP, "CMP" },
+    { ABSOLUTE, inst_DEC, "DEC" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_BNE, "BNE" },       // 0xd0
+    { IND_ZERO_PAGE_Y, inst_CMP, "CMP" },
+    { IMPLIED, inst_DEC, "DEC" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE_X, inst_CPY, "CPY" },
+    { ZERO_PAGE_X, inst_CMP, "CMP" },
+    { ZERO_PAGE_X, inst_DEC, "DEC" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_CLD, "CLD" },
+    { ABSOLUTE_X, inst_CMP, "CMP" },
+    { IMPLIED, inst_DEC, "DEC" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE_X, inst_CPY, "CPY" },
+    { ABSOLUTE_Y, inst_CMP, "CMP" },
+    { ABSOLUTE_X, inst_DEC, "DEC" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMMEDIATE, inst_CPX, "CPX" },     // 0xe0
+    { IND_ZERO_PAGE_X, inst_SBC, "SBC" },
+    { IMMEDIATE, inst_INC, "INC" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE, inst_CPX, "CPX" },
+    { ZERO_PAGE, inst_SBC, "SBC" },
+    { ZERO_PAGE, inst_INC, "INC" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_INX, "INX" },
+    { IMMEDIATE, inst_SBC, "SBC" },
+    { IMPLIED, inst_NOP, "NOP" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE, inst_CPX, "CPX" },
+    { ABSOLUTE, inst_SBC, "SBC" },
+    { ABSOLUTE, inst_INC, "INC" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_BEQ, "BEQ" },       // 0xf0
+    { IND_ZERO_PAGE_Y, inst_SBC, "SBC" },
+    { IMPLIED, inst_INC, "INC" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ZERO_PAGE_X, inst_CPX, "CPX" },
+    { ZERO_PAGE_X, inst_SBC, "SBC" },
+    { ZERO_PAGE_X, inst_INC, "INC" },
+    { IMPLIED, inst_INVALID, "???" },
+    { IMPLIED, inst_SED, "SED" },
+    { ABSOLUTE_X, inst_SBC, "SBC" },
+    { IMPLIED, inst_INC, "INC" },
+    { IMPLIED, inst_INVALID, "???" },
+    { ABSOLUTE_X, inst_CPX, "CPX" },
+    { ABSOLUTE_Y, inst_SBC, "SBC" },
+    { ABSOLUTE_X, inst_INC, "INC" },
 };

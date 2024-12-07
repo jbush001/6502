@@ -21,23 +21,25 @@ import sys
 table = [['IMPLIED', 'INVALID'] for _ in range(255)]
 
 def set_inst(fmt, field_index, field_value):
-    if isinstance(fmt, int):
-        table[fmt][field_index] = field_value
-    else:
-        num_bits = fmt.count('?')
-        for partial_index in range(2 ** num_bits):
-            index_shift = partial_index
-            table_index = 0
-            for bit_index in range(8):
-                table_index >>= 1
-                digit = fmt[7 - bit_index]
-                if digit == '?':
-                    table_index |= ((index_shift & 1) << 7)
-                    index_shift >>= 1
-                elif digit == '1':
-                    table_index |= 0x80
+    num_bits = fmt.count('?')
+    for partial_index in range(2 ** num_bits):
+        index_shift = partial_index
+        table_index = 0
+        for bit_index in range(8):
+            table_index >>= 1
+            digit = fmt[7 - bit_index]
+            if digit == '?':
+                table_index |= ((index_shift & 1) << 7)
+                index_shift >>= 1
+            elif digit == '1':
+                table_index |= 0x80
 
-            table[table_index][field_index] = field_value
+        table[table_index][field_index] = field_value
+
+
+def implied_inst(opcode, mnemonic):
+    table[opcode][0] = 'IMPLIED'
+    table[opcode][1] = mnemonic
 
 
 def dump_table():
@@ -66,14 +68,14 @@ def dump_table():
     print('''struct instruction {
     enum address_mode mode;
     void (*func)(struct m6502 *proc, enum address_mode mode);
+    const char *mnemonic;
 };
 
 const struct instruction INSTRUCTIONS[] = {''')
 
     for index, entry in enumerate(table):
-        line = '    { '
-        line += entry[0] + ', inst_' + entry[1]
-        line += ' },'
+        mnemonic = '???' if entry[1] == 'INVALID' else entry[1]
+        line = f'    {{ {entry[0]}, inst_{entry[1]}, "{mnemonic}" }},'
         if index % 16 == 0:
             line += (' ' * (40 - len(line))) + '// ' + hex(index)
         print(line)
@@ -134,42 +136,42 @@ def main():
     set_inst('110???00', 1, 'CPY')
     set_inst('111???00', 1, 'CPX')
 
-    set_inst(0x10, 1, 'BPL')
-    set_inst(0x30, 1, 'BMI')
-    set_inst(0x50, 1, 'BVC')
-    set_inst(0x70, 1, 'BVS')
-    set_inst(0x90, 1, 'BCC')
-    set_inst(0xb0, 1, 'BCS')
-    set_inst(0xd0, 1, 'BNE')
-    set_inst(0xf0, 1, 'BEQ')
+    implied_inst(0x10, 'BPL')
+    implied_inst(0x30, 'BMI')
+    implied_inst(0x50, 'BVC')
+    implied_inst(0x70, 'BVS')
+    implied_inst(0x90, 'BCC')
+    implied_inst(0xb0, 'BCS')
+    implied_inst(0xd0, 'BNE')
+    implied_inst(0xf0, 'BEQ')
 
-    set_inst(0x00, 1, 'BRK')
-    set_inst(0x20, 1, 'JSR')
-    set_inst(0x40, 1, 'RTI')
-    set_inst(0x60, 1, 'RTS')
+    implied_inst(0x00, 'BRK')
+    implied_inst(0x20, 'JSR')
+    implied_inst(0x40, 'RTI')
+    implied_inst(0x60, 'RTS')
 
-    set_inst(0x08, 1, 'PHP')
-    set_inst(0x28, 1, 'PLP')
-    set_inst(0x48, 1, 'PHA')
-    set_inst(0x68, 1, 'PLA')
-    set_inst(0x88, 1, 'DEY')
-    set_inst(0xa8, 1, 'TAY')
-    set_inst(0xc8, 1, 'INY')
-    set_inst(0xe8, 1, 'INX')
-    set_inst(0x18, 1, 'CLC')
-    set_inst(0x38, 1, 'SEC')
-    set_inst(0x58, 1, 'CLI')
-    set_inst(0x78, 1, 'SEI')
-    set_inst(0x98, 1, 'TYA')
-    set_inst(0xb8, 1, 'CLV')
-    set_inst(0xd8, 1, 'CLD')
-    set_inst(0xf8, 1, 'SED')
-    set_inst(0x8a, 1, 'TXA')
-    set_inst(0x9a, 1, 'TXS')
-    set_inst(0xaa, 1, 'TAX')
-    set_inst(0xba, 1, 'TSX')
-    set_inst(0xca, 1, 'DEX')
-    set_inst(0xea, 1, 'NOP')
+    implied_inst(0x08, 'PHP')
+    implied_inst(0x28, 'PLP')
+    implied_inst(0x48, 'PHA')
+    implied_inst(0x68, 'PLA')
+    implied_inst(0x88, 'DEY')
+    implied_inst(0xa8, 'TAY')
+    implied_inst(0xc8, 'INY')
+    implied_inst(0xe8, 'INX')
+    implied_inst(0x18, 'CLC')
+    implied_inst(0x38, 'SEC')
+    implied_inst(0x58, 'CLI')
+    implied_inst(0x78, 'SEI')
+    implied_inst(0x98, 'TYA')
+    implied_inst(0xb8, 'CLV')
+    implied_inst(0xd8, 'CLD')
+    implied_inst(0xf8, 'SED')
+    implied_inst(0x8a, 'TXA')
+    implied_inst(0x9a, 'TXS')
+    implied_inst(0xaa, 'TAX')
+    implied_inst(0xba, 'TSX')
+    implied_inst(0xca, 'DEX')
+    implied_inst(0xea, 'NOP')
 
     dump_table()
 

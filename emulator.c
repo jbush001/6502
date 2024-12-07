@@ -325,7 +325,7 @@ void init_proc(struct m6502 *proc) {
     proc->i = 0;
     proc->z = 0;
     proc->c = 0;
-    proc->memory = malloc(MEM_SIZE);
+    proc->memory = calloc(MEM_SIZE, 1);
     proc->running = 1;
 }
 
@@ -340,12 +340,54 @@ void dump_regs(struct m6502 *proc) {
         proc->i, proc->z, proc->c);
 }
 
+void disassemble(uint16_t base_addr, uint8_t *memory, int length) {
+    int offs = 0;
+    while (offs < length) {
+        uint8_t opcode = memory[offs++];
+        const struct instruction *inst = &INSTRUCTIONS[opcode];
+        printf("%04x %s ", base_addr + offs, inst->mnemonic);
+        switch (inst->mode) {
+            case ABSOLUTE:
+                printf("$%04x", memory[offs] | (memory[offs] << 8));
+                offs += 2;
+                break;
+            case ABSOLUTE_X:
+                printf("$%04x, X", memory[offs] | (memory[offs] << 8));
+                offs += 2;
+                break;
+            case ABSOLUTE_Y:
+                printf("$%04x, Y", memory[offs] | (memory[offs] << 8));
+                offs += 2;
+                break;
+            case IMPLIED:
+                break;
+            case IND_ZERO_PAGE_X:
+                printf("($%02x, X)", memory[offs++]);
+                break;
+            case IND_ZERO_PAGE_Y:
+                printf("($%02x), Y", memory[offs++]);
+                break;
+            case IMMEDIATE:
+                printf("#$%02x", memory[offs++]);
+                break;
+            case ZERO_PAGE_X:
+                printf("$%02x, X", memory[offs++]);
+                break;
+            case ZERO_PAGE:
+                printf("$%02x", memory[offs++]);
+                break;
+        }
+
+        printf("\n");
+    }
+}
+
 int main() {
     struct m6502 proc;
     init_proc(&proc);
     proc.memory[0] = 0xa9; // LDA #
     proc.memory[1] = 0xc2;
-    proc.memory[2] = 0x00; // BRK
+    disassemble(0, proc.memory, 16);
     mainloop(&proc);
     dump_regs(&proc);
 

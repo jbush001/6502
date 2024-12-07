@@ -14,9 +14,13 @@
 # limitations under the License.
 #
 
+CFLAGS=-W -Wall -O3 -Wno-unused-parameter
+
 emulator: instructions.h emulator.c
-	cc emulator.c -o emulator
+	cc emulator.c -o emulator $(CFLAGS)
 
 instructions.h: make_inst_tab.py
 	python3 make_inst_tab.py > instructions.h
 
+clean:
+	rm instructions.h emulator
