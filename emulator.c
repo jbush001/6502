@@ -27,7 +27,7 @@ struct m6502 {
     int8_t a;
     uint8_t x;
     uint8_t y;
-    uint8_t s;
+    uint16_t s;
     uint16_t pc;
 
     // flags
@@ -110,42 +110,84 @@ uint8_t get_operand(struct m6502 *proc, enum address_mode mode) {
     }
 }
 
-void set_zn(struct m6502 *proc) {
-    proc->n = (proc->a >> 7) & 1;
-    proc->z = (proc->a & 0xff) == 0;
+void set_zn(struct m6502 *proc, uint8_t value) {
+    proc->n = (value >> 7) & 1;
+    proc->z = (value & 0xff) == 0;
 }
 
-void inst_ROR(struct m6502 *proc, enum address_mode mode) {
+void inst_INVALID(struct m6502 *proc, enum address_mode mode) {
+    printf("invalid instruction at $%04x", proc->pc);
+    proc->running = 0;
 }
 
+void inst_BRK(struct m6502 *proc, enum address_mode mode) {
+    proc->running = 0;
+}
+
+void inst_NOP(struct m6502 *proc, enum address_mode mode) {
+}
+
+//
+// Arithmetic
+//
 void inst_LSR(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_ASL(struct m6502 *proc, enum address_mode mode) {
 }
 
-void inst_CMP(struct m6502 *proc, enum address_mode mode) {
+void inst_ROL(struct m6502 *proc, enum address_mode mode) {
+    if (mode == IMPLIED) {
+        uint8_t new_a = (proc->a << 1) | proc->c;
+        proc->c = (proc->a >> 7) & 1;
+        proc->a = new_a;
+        set_zn(proc, proc->a);
+    } else {
+        uint16_t addr = get_addr(proc, mode);
+        uint8_t val = read8(proc, addr);
+        uint8_t new_val = (val << 1) | proc->c;
+        proc->c = (val >> 7) & 1;
+        write8(proc, addr, new_val);
+    }
+}
+
+void inst_ROR(struct m6502 *proc, enum address_mode mode) {
+    if (mode == IMPLIED) {
+        uint8_t new_a = (proc->a >> 1) | (proc->c << 7);
+        proc->c = proc->a & 1;
+        proc->a = new_a;
+        set_zn(proc, proc->a);
+    } else {
+        uint16_t addr = get_addr(proc, mode);
+        uint8_t val = read8(proc, addr);
+        uint8_t new_val = (val >> 1) | (proc->c << 7);
+        proc->c = val & 1;
+        write8(proc, addr, new_val);
+    }
 }
 
 void inst_EOR(struct m6502 *proc, enum address_mode mode) {
+    proc->a ^= get_operand(proc, mode);
+    set_zn(proc, proc->a);
+}
+
+void inst_ORA(struct m6502 *proc, enum address_mode mode) {
+    proc->a |= get_operand(proc, mode);
+    set_zn(proc, proc->a);
 }
 
 void inst_AND(struct m6502 *proc, enum address_mode mode) {
     proc->a &= get_operand(proc, mode);
-    set_zn(proc);
+    set_zn(proc, proc->a);
 }
 
-void inst_BCS(struct m6502 *proc, enum address_mode mode) {
+void inst_BIT(struct m6502 *proc, enum address_mode mode) {
 }
 
-void inst_BVC(struct m6502 *proc, enum address_mode mode) {
+void inst_CMP(struct m6502 *proc, enum address_mode mode) {
 }
 
-void inst_INVALID(struct m6502 *proc, enum address_mode mode) {
-    printf("invalid instruction at $%04x", proc->pc);
-}
-
-void inst_PLA(struct m6502 *proc, enum address_mode mode) {
+void inst_CPX(struct m6502 *proc, enum address_mode mode) {
 }
 
 //
@@ -159,7 +201,7 @@ void inst_PLA(struct m6502 *proc, enum address_mode mode) {
 void inst_ADC(struct m6502 *proc, enum address_mode mode) {
     uint16_t uresult = (uint8_t) proc->a + get_operand(proc, mode) + proc->c;
     proc->a = uresult & 0xff;
-    set_zn(proc);
+    set_zn(proc, proc->a);
     proc->c = (uresult >> 8) & 1;
 
     // XXX probably broken
@@ -167,117 +209,149 @@ void inst_ADC(struct m6502 *proc, enum address_mode mode) {
     proc->v = (sresult < -128 || sresult > 127);
 }
 
-void inst_CLC(struct m6502 *proc, enum address_mode mode) {
+void inst_SBC(struct m6502 *proc, enum address_mode mode) {
+}
+
+void inst_INC(struct m6502 *proc, enum address_mode mode) {
+    uint16_t addr = get_addr(proc, mode);
+    uint8_t new_val = read8(proc, addr) + 1;
+    set_zn(proc, new_val);
+    write8(proc, addr, new_val);
+}
+
+void inst_DEC(struct m6502 *proc, enum address_mode mode) {
+    uint16_t addr = get_addr(proc, mode);
+    uint8_t new_val = read8(proc, addr) - 1;
+    set_zn(proc, new_val);
+    write8(proc, addr, new_val);
+}
+
+void inst_INX(struct m6502 *proc, enum address_mode mode) {
+    set_zn(proc, ++proc->x);
 }
 
 void inst_DEX(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_CPX(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_SED(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_ORA(struct m6502 *proc, enum address_mode mode) {
-    proc->a |= get_operand(proc, mode);
-}
-
-void inst_ROL(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_STA(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_CLD(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_STY(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_CLI(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_STX(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_TAY(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_NOP(struct m6502 *proc, enum address_mode mode) {
+    set_zn(proc, --proc->x);
 }
 
 void inst_INY(struct m6502 *proc, enum address_mode mode) {
+    set_zn(proc, ++proc->y);
+}
+
+void inst_DEY(struct m6502 *proc, enum address_mode mode) {
+    set_zn(proc, --proc->y);
+}
+
+//
+// Register moves
+//
+void inst_LDA(struct m6502 *proc, enum address_mode mode) {
+    proc->a = get_operand(proc, mode);
+    set_zn(proc, proc->a);
+}
+
+void inst_LDX(struct m6502 *proc, enum address_mode mode) {
+    proc->x = get_operand(proc, mode);
+    set_zn(proc, proc->a);
 }
 
 void inst_LDY(struct m6502 *proc, enum address_mode mode) {
+    proc->y = get_operand(proc, mode);
+    set_zn(proc, proc->y);
 }
 
-void inst_BRK(struct m6502 *proc, enum address_mode mode) {
-    proc->running = 0;
+void inst_STA(struct m6502 *proc, enum address_mode mode) {
+    write8(proc, get_addr(proc, mode), proc->a);
+}
+
+void inst_STX(struct m6502 *proc, enum address_mode mode) {
+    write8(proc, get_addr(proc, mode), proc->x);
+}
+
+void inst_STY(struct m6502 *proc, enum address_mode mode) {
+    write8(proc, get_addr(proc, mode), proc->y);
+}
+
+void inst_TXS(struct m6502 *proc, enum address_mode mode) {
+    proc->s = proc->x;
+}
+
+void inst_TSX(struct m6502 *proc, enum address_mode mode) {
+    proc->x = proc->s;
+}
+
+void inst_TAX(struct m6502 *proc, enum address_mode mode) {
+    proc->x = proc->a;
+}
+
+void inst_TXA(struct m6502 *proc, enum address_mode mode) {
+    proc->a = proc->x;
+}
+
+void inst_TAY(struct m6502 *proc, enum address_mode mode) {
+    proc->y = proc->a;
+}
+
+void inst_TYA(struct m6502 *proc, enum address_mode mode) {
+    proc->a = proc->y;
 }
 
 void inst_PHA(struct m6502 *proc, enum address_mode mode) {
 }
 
-void inst_JMP(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_BNE(struct m6502 *proc, enum address_mode mode) {
-}
-
 void inst_PHP(struct m6502 *proc, enum address_mode mode) {
 }
 
-void inst_RTI(struct m6502 *proc, enum address_mode mode) {
+void inst_PLA(struct m6502 *proc, enum address_mode mode) {
 }
 
-void inst_LDA(struct m6502 *proc, enum address_mode mode) {
-    proc->a = get_operand(proc, mode);
-    proc->z = proc->a == 0;
-    proc->n = (proc->a & 0x80) != 0;
+//
+// Setting/clearing flags
+//
+void inst_SEC(struct m6502 *proc, enum address_mode mode) {
+    proc->c = 1;
 }
 
-void inst_TXS(struct m6502 *proc, enum address_mode mode) {
+void inst_CLC(struct m6502 *proc, enum address_mode mode) {
+    proc->c = 0;
 }
 
-void inst_TAX(struct m6502 *proc, enum address_mode mode) {
+void inst_SED(struct m6502 *proc, enum address_mode mode) {
+    proc->d = 1;
+}
+
+void inst_CLD(struct m6502 *proc, enum address_mode mode) {
+    proc->d = 0;
+}
+
+void inst_SEI(struct m6502 *proc, enum address_mode mode) {
+    proc->i = 1;
+}
+
+void inst_CLI(struct m6502 *proc, enum address_mode mode) {
+    proc->i = 0;
+}
+
+void inst_CLV(struct m6502 *proc, enum address_mode mode) {
+    proc->v = 0;
+}
+
+//
+// Branch
+//
+void inst_BCS(struct m6502 *proc, enum address_mode mode) {
+}
+
+void inst_BVC(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_BMI(struct m6502 *proc, enum address_mode mode) {
 }
 
-void inst_TXA(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_DEY(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_TSX(struct m6502 *proc, enum address_mode mode) {
-}
-
 void inst_BCC(struct m6502 *proc, enum address_mode mode) {
 }
 
-void inst_BIT(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_SEC(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_SBC(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_DEC(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_LDX(struct m6502 *proc, enum address_mode mode) {
-}
-
 void inst_PLP(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_INC(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_CPY(struct m6502 *proc, enum address_mode mode) {
@@ -289,16 +363,10 @@ void inst_BPL(struct m6502 *proc, enum address_mode mode) {
 void inst_BVS(struct m6502 *proc, enum address_mode mode) {
 }
 
-void inst_TYA(struct m6502 *proc, enum address_mode mode) {
+void inst_JMP(struct m6502 *proc, enum address_mode mode) {
 }
 
-void inst_SEI(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_CLV(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_INX(struct m6502 *proc, enum address_mode mode) {
+void inst_RTI(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_BEQ(struct m6502 *proc, enum address_mode mode) {
@@ -308,6 +376,9 @@ void inst_JSR(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_RTS(struct m6502 *proc, enum address_mode mode) {
+}
+
+void inst_BNE(struct m6502 *proc, enum address_mode mode) {
 }
 
 void mainloop(struct m6502 *proc) {
