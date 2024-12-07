@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "instructions.h"
 
 #define MEM_SIZE 0x10000
@@ -109,6 +110,11 @@ uint8_t get_operand(struct m6502 *proc, enum address_mode mode) {
     }
 }
 
+void set_zn(struct m6502 *proc) {
+    proc->n = (proc->a >> 7) & 1;
+    proc->z = (proc->a & 0xff) == 0;
+}
+
 void inst_ROR(struct m6502 *proc, enum address_mode mode) {
 }
 
@@ -126,6 +132,7 @@ void inst_EOR(struct m6502 *proc, enum address_mode mode) {
 
 void inst_AND(struct m6502 *proc, enum address_mode mode) {
     proc->a &= get_operand(proc, mode);
+    set_zn(proc);
 }
 
 void inst_BCS(struct m6502 *proc, enum address_mode mode) {
@@ -152,8 +159,7 @@ void inst_PLA(struct m6502 *proc, enum address_mode mode) {
 void inst_ADC(struct m6502 *proc, enum address_mode mode) {
     uint16_t uresult = (uint8_t) proc->a + get_operand(proc, mode) + proc->c;
     proc->a = uresult & 0xff;
-    proc->n = (uresult >> 7) & 1;
-    proc->z = (uresult & 0xff) == 0;
+    set_zn(proc);
     proc->c = (uresult >> 8) & 1;
 
     // XXX probably broken
@@ -343,42 +349,61 @@ void dump_regs(struct m6502 *proc) {
 void disassemble(uint16_t base_addr, uint8_t *memory, int length) {
     int offs = 0;
     while (offs < length) {
+        int start_offs = offs;
         uint8_t opcode = memory[offs++];
         const struct instruction *inst = &INSTRUCTIONS[opcode];
-        printf("%04x %s ", base_addr + offs, inst->mnemonic);
+        char operands[64];
         switch (inst->mode) {
             case ABSOLUTE:
-                printf("$%04x", memory[offs] | (memory[offs] << 8));
+                snprintf(operands, sizeof(operands), "$%04x", memory[offs] | (memory[offs + 1] << 8));
                 offs += 2;
                 break;
             case ABSOLUTE_X:
-                printf("$%04x, X", memory[offs] | (memory[offs] << 8));
+                snprintf(operands, sizeof(operands), "$%04x, X",
+                    memory[offs] | (memory[offs + 1] << 8));
                 offs += 2;
                 break;
             case ABSOLUTE_Y:
-                printf("$%04x, Y", memory[offs] | (memory[offs] << 8));
+                snprintf(operands, sizeof(operands), "$%04x, Y",
+                    memory[offs] | (memory[offs + 1] << 8));
                 offs += 2;
                 break;
             case IMPLIED:
+                strcpy(operands, "");
                 break;
             case IND_ZERO_PAGE_X:
-                printf("($%02x, X)", memory[offs++]);
+                snprintf(operands, sizeof(operands), "($%02x, X)",
+                    memory[offs++]);
                 break;
             case IND_ZERO_PAGE_Y:
-                printf("($%02x), Y", memory[offs++]);
+                snprintf(operands, sizeof(operands), "($%02x), Y",
+                    memory[offs++]);
                 break;
             case IMMEDIATE:
-                printf("#$%02x", memory[offs++]);
+                snprintf(operands, sizeof(operands), "#$%02x", memory[offs++]);
                 break;
             case ZERO_PAGE_X:
-                printf("$%02x, X", memory[offs++]);
+                snprintf(operands, sizeof(operands), "$%02x, X",
+                    memory[offs++]);
                 break;
             case ZERO_PAGE:
-                printf("$%02x", memory[offs++]);
+                snprintf(operands, sizeof(operands), "$%02x", memory[offs++]);
                 break;
         }
 
-        printf("\n");
+        char line[128];
+        snprintf(line, sizeof(line), "%04x", base_addr + start_offs);
+        for (int i = start_offs; i < offs; i++) {
+            snprintf(line + strlen(line), sizeof(line) - strlen(line), " %02x", memory[i]);
+        }
+
+        while (strlen(line) < 20) {
+            strcat(line, " ");
+        }
+
+        snprintf(line + strlen(line), sizeof(line) - strlen(line),
+            " %s %s", inst->mnemonic, operands);
+        printf("%s\n", line);
     }
 }
 

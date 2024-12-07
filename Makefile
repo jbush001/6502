@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-CFLAGS=-W -Wall -O3 -Wno-unused-parameter
+CFLAGS=-W -Wall -Wno-unused-parameter -g
 
 all: emulator program.bin
 

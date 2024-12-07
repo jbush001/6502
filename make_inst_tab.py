@@ -18,7 +18,7 @@ import sys
 
 # https://llx.com/Neil/a2/opcodes.html
 
-table = [['IMPLIED', 'INVALID'] for _ in range(255)]
+table = [['IMPLIED', 'INVALID'] for _ in range(256)]
 
 def set_inst(fmt, field_index, field_value):
     num_bits = fmt.count('?')
