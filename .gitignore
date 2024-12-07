@@ -1,2 +1,4 @@
 emulator
 .vscode
+program.bin
+program.lst

@@ -16,6 +16,8 @@
 
 CFLAGS=-W -Wall -O3 -Wno-unused-parameter
 
+all: emulator program.bin
+
 emulator: instructions.h emulator.c
 	cc emulator.c -o emulator $(CFLAGS)
 
@@ -24,3 +26,7 @@ instructions.h: make_inst_tab.py
 
 clean:
 	rm instructions.h emulator
+
+program.bin: program.asm
+	dasm program.asm -f3 -lprogram.lst -oprogram.bin
+
