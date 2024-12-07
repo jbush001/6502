@@ -92,8 +92,10 @@ uint16_t get_addr(struct m6502 *proc, enum address_mode mode) {
             return addr + proc->y;
         }
 
+        case INDIRECT:
         case IMPLIED:
         default:
+            assert(0);
             return 0;
     }
 }
@@ -188,6 +190,9 @@ void inst_CMP(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_CPX(struct m6502 *proc, enum address_mode mode) {
+}
+
+void inst_CPY(struct m6502 *proc, enum address_mode mode) {
 }
 
 //
@@ -299,10 +304,13 @@ void inst_TYA(struct m6502 *proc, enum address_mode mode) {
 void inst_PHA(struct m6502 *proc, enum address_mode mode) {
 }
 
+void inst_PLA(struct m6502 *proc, enum address_mode mode) {
+}
+
 void inst_PHP(struct m6502 *proc, enum address_mode mode) {
 }
 
-void inst_PLA(struct m6502 *proc, enum address_mode mode) {
+void inst_PLP(struct m6502 *proc, enum address_mode mode) {
 }
 
 //
@@ -340,36 +348,68 @@ void inst_CLV(struct m6502 *proc, enum address_mode mode) {
 // Branch
 //
 void inst_BCS(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_BVC(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_BMI(struct m6502 *proc, enum address_mode mode) {
+    int8_t offset = read8(proc, proc->pc++);
+    if (proc->c) {
+        proc->pc += offset;
+    }
 }
 
 void inst_BCC(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_PLP(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_CPY(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_BPL(struct m6502 *proc, enum address_mode mode) {
+    int8_t offset = read8(proc, proc->pc++);
+    if (!proc->c) {
+        proc->pc += offset;
+    }
 }
 
 void inst_BVS(struct m6502 *proc, enum address_mode mode) {
+    int8_t offset = read8(proc, proc->pc++);
+    if (proc->v) {
+        proc->pc += offset;
+    }
 }
 
-void inst_JMP(struct m6502 *proc, enum address_mode mode) {
+void inst_BVC(struct m6502 *proc, enum address_mode mode) {
+    int8_t offset = read8(proc, proc->pc++);
+    if (!proc->v) {
+        proc->pc += offset;
+    }
 }
 
-void inst_RTI(struct m6502 *proc, enum address_mode mode) {
+void inst_BMI(struct m6502 *proc, enum address_mode mode) {
+    int8_t offset = read8(proc, proc->pc++);
+    if (proc->n) {
+        proc->pc += offset;
+    }
+}
+
+void inst_BPL(struct m6502 *proc, enum address_mode mode) {
+    int8_t offset = read8(proc, proc->pc++);
+    if (!proc->n) {
+        proc->pc += offset;
+    }
 }
 
 void inst_BEQ(struct m6502 *proc, enum address_mode mode) {
+    int8_t offset = read8(proc, proc->pc++);
+    if (proc->z) {
+        proc->pc += offset;
+    }
+}
+
+void inst_BNE(struct m6502 *proc, enum address_mode mode) {
+    int8_t offset = read8(proc, proc->pc++);
+    if (!proc->z) {
+        proc->pc += offset;
+    }
+}
+
+void inst_JMP(struct m6502 *proc, enum address_mode mode) {
+    if (mode == ABSOLUTE) {
+        proc->pc = read16(proc, proc->pc);
+    } else {
+        // Indirect
+        proc->pc = read16(proc, read16(proc, proc->pc));
+    }
 }
 
 void inst_JSR(struct m6502 *proc, enum address_mode mode) {
@@ -378,7 +418,7 @@ void inst_JSR(struct m6502 *proc, enum address_mode mode) {
 void inst_RTS(struct m6502 *proc, enum address_mode mode) {
 }
 
-void inst_BNE(struct m6502 *proc, enum address_mode mode) {
+void inst_RTI(struct m6502 *proc, enum address_mode mode) {
 }
 
 void mainloop(struct m6502 *proc) {
@@ -459,6 +499,11 @@ void disassemble(uint16_t base_addr, uint8_t *memory, int length) {
                 break;
             case ZERO_PAGE:
                 snprintf(operands, sizeof(operands), "$%02x", memory[offs++]);
+                break;
+            case INDIRECT:
+                snprintf(operands, sizeof(operands), "($%04x)",
+                    memory[offs] | (memory[offs + 1] << 8));
+                offs += 2;
                 break;
         }
 

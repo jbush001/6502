@@ -129,12 +129,15 @@ def main():
     set_inst('???11100', 0, 'ABSOLUTE_X')
 
     set_inst('001???00', 1, 'BIT')
-    set_inst('010???00', 1, 'JMP')
-    set_inst('011???00', 1, 'JMP')
     set_inst('100???00', 1, 'STY')
     set_inst('101???00', 1, 'LDY')
     set_inst('110???00', 1, 'CPY')
     set_inst('111???00', 1, 'CPX')
+
+    set_inst('01?01100', 1, 'JMP')
+    set_inst('01001100', 0, 'ABSOLUTE')
+    set_inst('01101100', 0, 'INDIRECT')
+
 
     implied_inst(0x10, 'BPL')
     implied_inst(0x30, 'BMI')
