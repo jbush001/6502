@@ -1,5 +1,6 @@
-emulator
 .vscode
 *.bin
 *.lst
+emulator
+core-test
 
