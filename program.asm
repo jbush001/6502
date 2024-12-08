@@ -2,8 +2,8 @@
 
                     seg code
                     org $0000
-reset               ror val
-                    lda val
+reset               lda #$24
+                    sbc #$23
                     brk
                     seg variables
                     org 100

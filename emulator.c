@@ -44,17 +44,14 @@ struct m6502 {
 };
 
 uint8_t read8(struct m6502 *proc, uint16_t addr) {
-    // XXX bounds check
     return proc->memory[addr];
 }
 
 void write8(struct m6502 *proc, uint16_t addr, uint8_t val) {
-    // XXX bounds check
     proc->memory[addr] = val;
 }
 
 uint16_t read16(struct m6502 *proc, uint16_t addr) {
-    // XXX bounds check
     return proc->memory[addr] | (proc->memory[addr + 1] << 8);
 }
 
@@ -123,7 +120,6 @@ void inst_INVALID(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_BRK(struct m6502 *proc, enum address_mode mode) {
-    printf("brk\n");
     proc->running = 0;
 }
 
@@ -178,18 +174,15 @@ void inst_AND(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_BIT(struct m6502 *proc, enum address_mode mode) {
+    assert(0); // Not implemented
 }
 
-void inst_CMP(struct m6502 *proc, enum address_mode mode) {
+
+uint8_t negate(uint8_t val) {
+    return (val ^ 0xff) + 1;
 }
 
-void inst_CPX(struct m6502 *proc, enum address_mode mode) {
-}
-
-void inst_CPY(struct m6502 *proc, enum address_mode mode) {
-}
-
-//
+// Set flags as a side effect
 // Cases:
 // V C   Unsigned         Signed
 // 0 0   64 +  80 = 144    64 +   80 =  144
@@ -197,18 +190,41 @@ void inst_CPY(struct m6502 *proc, enum address_mode mode) {
 // 0 1  192 + 176 = 368   -64 +  -80 = -144
 // 1 1  208 + 144 = 352   -48 + -112 =   96
 //
-void inst_ADC(struct m6502 *proc, enum address_mode mode) {
-    uint16_t uresult = (uint8_t) proc->a + get_operand(proc, mode) + proc->c;
-    proc->a = uresult & 0xff;
-    set_zn(proc, proc->a);
+uint8_t add(struct m6502 *proc, uint8_t op1, uint8_t op2) {
+    uint16_t uresult = op1 + op2 + proc->c;
+    set_zn(proc, uresult);
     proc->c = (uresult >> 8) & 1;
 
-    // XXX probably broken
-    int16_t sresult = (int8_t) proc->a + (int8_t) get_operand(proc, mode) + proc->c;
-    proc->v = (sresult < -128 || sresult > 127);
+    // Overflow indicates a signed arithmetic operation has wrapped
+    // around, inverting the sign. It can only occur when the signs
+    // of the two operands are the same and the result has a different
+    // sign.
+    int sign1 = op1 >> 7;
+    int sign2 = op2 >> 7;
+    int result_sign = (uresult >> 7) & 1;
+    proc->v = sign1 == sign2 && sign1 != result_sign;
+
+    return uresult & 0xff;
+}
+
+void inst_CMP(struct m6502 *proc, enum address_mode mode) {
+    add(proc, proc->a, negate(get_operand(proc, mode)));
+}
+
+void inst_CPX(struct m6502 *proc, enum address_mode mode) {
+    add(proc, proc->x, negate(get_operand(proc, mode)));
+}
+
+void inst_CPY(struct m6502 *proc, enum address_mode mode) {
+    add(proc, proc->y, negate(get_operand(proc, mode)));
+}
+
+void inst_ADC(struct m6502 *proc, enum address_mode mode) {
+    proc->a = add(proc, proc->a, get_operand(proc, mode));
 }
 
 void inst_SBC(struct m6502 *proc, enum address_mode mode) {
+    proc->a = add(proc, proc->a, negate(get_operand(proc, mode)));
 }
 
 void inst_INC(struct m6502 *proc, enum address_mode mode) {
@@ -422,6 +438,7 @@ void inst_RTS(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_RTI(struct m6502 *proc, enum address_mode mode) {
+    assert(0); // Not implemented
 }
 
 void mainloop(struct m6502 *proc) {
