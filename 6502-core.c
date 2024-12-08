@@ -94,11 +94,11 @@ void set_nz_flags(struct m6502 *proc, uint8_t value) {
 
 void inst_INVALID(struct m6502 *proc, enum address_mode mode) {
     printf("invalid instruction at $%04x\n", proc->pc - 1);
-    proc->running = 0;
+    proc->halt = 1;
 }
 
 void inst_BRK(struct m6502 *proc, enum address_mode mode) {
-    proc->running = 0;
+    proc->halt = 1;
 }
 
 void inst_NOP(struct m6502 *proc, enum address_mode mode) {
@@ -112,11 +112,12 @@ void inst_NOP(struct m6502 *proc, enum address_mode mode) {
         uint8_t old_val = proc->a; \
         uint8_t new_val = __op__; \
         proc->a = new_val; \
-        set_nz_flags(proc, proc->a); \
+        set_nz_flags(proc, new_val); \
     } else { \
         uint16_t addr = get_operand_addr(proc, mode); \
         uint8_t old_val = read_mem_u8(proc, addr); \
         uint8_t new_val = __op__; \
+        set_nz_flags(proc, new_val); \
         write_mem_u8(proc, addr, new_val); \
     }
 
@@ -262,26 +263,32 @@ void inst_STY(struct m6502 *proc, enum address_mode mode) {
 
 void inst_TXS(struct m6502 *proc, enum address_mode mode) {
     proc->s = proc->x;
+    set_nz_flags(proc, proc->s);
 }
 
 void inst_TSX(struct m6502 *proc, enum address_mode mode) {
     proc->x = proc->s;
+    set_nz_flags(proc, proc->x);
 }
 
 void inst_TAX(struct m6502 *proc, enum address_mode mode) {
     proc->x = proc->a;
+    set_nz_flags(proc, proc->x);
 }
 
 void inst_TXA(struct m6502 *proc, enum address_mode mode) {
     proc->a = proc->x;
+    set_nz_flags(proc, proc->a);
 }
 
 void inst_TAY(struct m6502 *proc, enum address_mode mode) {
     proc->y = proc->a;
+    set_nz_flags(proc, proc->y);
 }
 
 void inst_TYA(struct m6502 *proc, enum address_mode mode) {
     proc->a = proc->y;
+    set_nz_flags(proc, proc->a);
 }
 
 void inst_PHA(struct m6502 *proc, enum address_mode mode) {
@@ -290,6 +297,7 @@ void inst_PHA(struct m6502 *proc, enum address_mode mode) {
 
 void inst_PLA(struct m6502 *proc, enum address_mode mode) {
     proc->a = read_mem_u8(proc, ++proc->s + 0x100);
+    set_nz_flags(proc, proc->a);
 }
 
 void inst_PHP(struct m6502 *proc, enum address_mode mode) {
@@ -403,8 +411,8 @@ void inst_JMP(struct m6502 *proc, enum address_mode mode) {
 
 void inst_JSR(struct m6502 *proc, enum address_mode mode) {
     uint16_t target = read_mem_u16(proc, proc->pc);
-    write_mem_u8(proc, proc->s-- + 0x100, proc->pc & 0xff);
     write_mem_u8(proc, proc->s-- + 0x100, proc->pc >> 8);
+    write_mem_u8(proc, proc->s-- + 0x100, proc->pc & 0xff);
     proc->pc = target;
 }
 
@@ -419,7 +427,8 @@ void inst_RTI(struct m6502 *proc, enum address_mode mode) {
 }
 
 void run_emulator(struct m6502 *proc) {
-    while (proc->running) {
+    proc->halt = 0;
+    while (!proc->halt) {
         int opcode = read_mem_u8(proc, proc->pc++);
         const struct instruction *inst = &INSTRUCTIONS[opcode];
         inst->func(proc, inst->mode);
@@ -430,7 +439,7 @@ void init_proc(struct m6502 *proc) {
     proc->a = 0;
     proc->x = 0;
     proc->y = 0;
-    proc->s = 0;
+    proc->s = 0xff;
     proc->pc = 0; // XXX reset vector
     proc->n = 0;
     proc->v = 0;
@@ -440,7 +449,6 @@ void init_proc(struct m6502 *proc) {
     proc->z = 0;
     proc->c = 0;
     proc->memory = calloc(MEM_SIZE, 1);
-    proc->running = 1;
 }
 
 void dump_regs(struct m6502 *proc) {

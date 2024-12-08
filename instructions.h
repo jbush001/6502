@@ -2,75 +2,75 @@
 struct m6502;
 
 enum address_mode {
-    IND_ZERO_PAGE_X,
-    ZERO_PAGE,
-    ABSOLUTE_X,
-    IMMEDIATE,
-    ABSOLUTE_Y,
-    INDIRECT,
-    ABSOLUTE,
     IMPLIED,
+    IND_ZERO_PAGE_X,
+    IMMEDIATE,
+    INDIRECT,
+    ABSOLUTE_X,
     IND_ZERO_PAGE_Y,
+    ZERO_PAGE,
     ZERO_PAGE_X,
+    ABSOLUTE,
+    ABSOLUTE_Y,
 };
 
-void inst_TXS(struct m6502 *proc, enum address_mode mode);
-void inst_BRK(struct m6502 *proc, enum address_mode mode);
-void inst_ORA(struct m6502 *proc, enum address_mode mode);
-void inst_BPL(struct m6502 *proc, enum address_mode mode);
-void inst_CLD(struct m6502 *proc, enum address_mode mode);
-void inst_INX(struct m6502 *proc, enum address_mode mode);
-void inst_EOR(struct m6502 *proc, enum address_mode mode);
-void inst_TAY(struct m6502 *proc, enum address_mode mode);
-void inst_TXA(struct m6502 *proc, enum address_mode mode);
-void inst_CPX(struct m6502 *proc, enum address_mode mode);
-void inst_INC(struct m6502 *proc, enum address_mode mode);
-void inst_SED(struct m6502 *proc, enum address_mode mode);
-void inst_BMI(struct m6502 *proc, enum address_mode mode);
-void inst_LDX(struct m6502 *proc, enum address_mode mode);
-void inst_RTI(struct m6502 *proc, enum address_mode mode);
-void inst_RTS(struct m6502 *proc, enum address_mode mode);
-void inst_DEX(struct m6502 *proc, enum address_mode mode);
-void inst_CLC(struct m6502 *proc, enum address_mode mode);
-void inst_CLI(struct m6502 *proc, enum address_mode mode);
-void inst_SBC(struct m6502 *proc, enum address_mode mode);
-void inst_NOP(struct m6502 *proc, enum address_mode mode);
-void inst_PLP(struct m6502 *proc, enum address_mode mode);
-void inst_LDA(struct m6502 *proc, enum address_mode mode);
-void inst_INY(struct m6502 *proc, enum address_mode mode);
-void inst_TAX(struct m6502 *proc, enum address_mode mode);
-void inst_BCC(struct m6502 *proc, enum address_mode mode);
-void inst_SEI(struct m6502 *proc, enum address_mode mode);
-void inst_STX(struct m6502 *proc, enum address_mode mode);
-void inst_JMP(struct m6502 *proc, enum address_mode mode);
-void inst_BEQ(struct m6502 *proc, enum address_mode mode);
-void inst_STA(struct m6502 *proc, enum address_mode mode);
-void inst_TSX(struct m6502 *proc, enum address_mode mode);
-void inst_CLV(struct m6502 *proc, enum address_mode mode);
-void inst_TYA(struct m6502 *proc, enum address_mode mode);
-void inst_LSR(struct m6502 *proc, enum address_mode mode);
-void inst_ROL(struct m6502 *proc, enum address_mode mode);
-void inst_INVALID(struct m6502 *proc, enum address_mode mode);
-void inst_BVC(struct m6502 *proc, enum address_mode mode);
-void inst_ASL(struct m6502 *proc, enum address_mode mode);
-void inst_STY(struct m6502 *proc, enum address_mode mode);
-void inst_AND(struct m6502 *proc, enum address_mode mode);
 void inst_ROR(struct m6502 *proc, enum address_mode mode);
-void inst_PHP(struct m6502 *proc, enum address_mode mode);
-void inst_ADC(struct m6502 *proc, enum address_mode mode);
-void inst_CMP(struct m6502 *proc, enum address_mode mode);
-void inst_DEY(struct m6502 *proc, enum address_mode mode);
-void inst_DEC(struct m6502 *proc, enum address_mode mode);
-void inst_CPY(struct m6502 *proc, enum address_mode mode);
+void inst_TXS(struct m6502 *proc, enum address_mode mode);
+void inst_RTS(struct m6502 *proc, enum address_mode mode);
 void inst_PLA(struct m6502 *proc, enum address_mode mode);
-void inst_SEC(struct m6502 *proc, enum address_mode mode);
-void inst_JSR(struct m6502 *proc, enum address_mode mode);
-void inst_BNE(struct m6502 *proc, enum address_mode mode);
+void inst_LDX(struct m6502 *proc, enum address_mode mode);
+void inst_INY(struct m6502 *proc, enum address_mode mode);
+void inst_STA(struct m6502 *proc, enum address_mode mode);
+void inst_BCC(struct m6502 *proc, enum address_mode mode);
+void inst_LDA(struct m6502 *proc, enum address_mode mode);
+void inst_DEY(struct m6502 *proc, enum address_mode mode);
+void inst_CLV(struct m6502 *proc, enum address_mode mode);
+void inst_TSX(struct m6502 *proc, enum address_mode mode);
+void inst_SED(struct m6502 *proc, enum address_mode mode);
+void inst_CMP(struct m6502 *proc, enum address_mode mode);
+void inst_BEQ(struct m6502 *proc, enum address_mode mode);
 void inst_BVS(struct m6502 *proc, enum address_mode mode);
-void inst_BIT(struct m6502 *proc, enum address_mode mode);
-void inst_LDY(struct m6502 *proc, enum address_mode mode);
-void inst_PHA(struct m6502 *proc, enum address_mode mode);
+void inst_STY(struct m6502 *proc, enum address_mode mode);
+void inst_DEX(struct m6502 *proc, enum address_mode mode);
+void inst_JSR(struct m6502 *proc, enum address_mode mode);
+void inst_CPX(struct m6502 *proc, enum address_mode mode);
+void inst_CLI(struct m6502 *proc, enum address_mode mode);
+void inst_CPY(struct m6502 *proc, enum address_mode mode);
+void inst_CLD(struct m6502 *proc, enum address_mode mode);
+void inst_TAY(struct m6502 *proc, enum address_mode mode);
+void inst_INX(struct m6502 *proc, enum address_mode mode);
+void inst_BPL(struct m6502 *proc, enum address_mode mode);
+void inst_CLC(struct m6502 *proc, enum address_mode mode);
 void inst_BCS(struct m6502 *proc, enum address_mode mode);
+void inst_ORA(struct m6502 *proc, enum address_mode mode);
+void inst_PLP(struct m6502 *proc, enum address_mode mode);
+void inst_ADC(struct m6502 *proc, enum address_mode mode);
+void inst_ASL(struct m6502 *proc, enum address_mode mode);
+void inst_BIT(struct m6502 *proc, enum address_mode mode);
+void inst_JMP(struct m6502 *proc, enum address_mode mode);
+void inst_TAX(struct m6502 *proc, enum address_mode mode);
+void inst_TXA(struct m6502 *proc, enum address_mode mode);
+void inst_SEC(struct m6502 *proc, enum address_mode mode);
+void inst_LSR(struct m6502 *proc, enum address_mode mode);
+void inst_PHA(struct m6502 *proc, enum address_mode mode);
+void inst_TYA(struct m6502 *proc, enum address_mode mode);
+void inst_DEC(struct m6502 *proc, enum address_mode mode);
+void inst_AND(struct m6502 *proc, enum address_mode mode);
+void inst_ROL(struct m6502 *proc, enum address_mode mode);
+void inst_EOR(struct m6502 *proc, enum address_mode mode);
+void inst_SEI(struct m6502 *proc, enum address_mode mode);
+void inst_BVC(struct m6502 *proc, enum address_mode mode);
+void inst_LDY(struct m6502 *proc, enum address_mode mode);
+void inst_BNE(struct m6502 *proc, enum address_mode mode);
+void inst_SBC(struct m6502 *proc, enum address_mode mode);
+void inst_BRK(struct m6502 *proc, enum address_mode mode);
+void inst_INVALID(struct m6502 *proc, enum address_mode mode);
+void inst_STX(struct m6502 *proc, enum address_mode mode);
+void inst_INC(struct m6502 *proc, enum address_mode mode);
+void inst_NOP(struct m6502 *proc, enum address_mode mode);
+void inst_RTI(struct m6502 *proc, enum address_mode mode);
+void inst_BMI(struct m6502 *proc, enum address_mode mode);
+void inst_PHP(struct m6502 *proc, enum address_mode mode);
 
 struct instruction {
     enum address_mode mode;
@@ -104,11 +104,11 @@ const struct instruction INSTRUCTIONS[] = {
     { ZERO_PAGE_X, inst_ASL, "ASL" },
     { IMPLIED, inst_INVALID, "???" },
     { IMPLIED, inst_CLC, "CLC" },
-    { ABSOLUTE_X, inst_ORA, "ORA" },
+    { ABSOLUTE_Y, inst_ORA, "ORA" },
     { IMPLIED, inst_ASL, "ASL" },
     { IMPLIED, inst_INVALID, "???" },
     { ABSOLUTE_X, inst_INVALID, "???" },
-    { ABSOLUTE_Y, inst_ORA, "ORA" },
+    { ABSOLUTE_X, inst_ORA, "ORA" },
     { ABSOLUTE_X, inst_ASL, "ASL" },
     { IMPLIED, inst_INVALID, "???" },
     { IMPLIED, inst_JSR, "JSR" },       // 0x20
@@ -136,11 +136,11 @@ const struct instruction INSTRUCTIONS[] = {
     { ZERO_PAGE_X, inst_ROL, "ROL" },
     { IMPLIED, inst_INVALID, "???" },
     { IMPLIED, inst_SEC, "SEC" },
-    { ABSOLUTE_X, inst_AND, "AND" },
+    { ABSOLUTE_Y, inst_AND, "AND" },
     { IMPLIED, inst_ROL, "ROL" },
     { IMPLIED, inst_INVALID, "???" },
     { ABSOLUTE_X, inst_BIT, "BIT" },
-    { ABSOLUTE_Y, inst_AND, "AND" },
+    { ABSOLUTE_X, inst_AND, "AND" },
     { ABSOLUTE_X, inst_ROL, "ROL" },
     { IMPLIED, inst_INVALID, "???" },
     { IMPLIED, inst_RTI, "RTI" },       // 0x40
@@ -168,11 +168,11 @@ const struct instruction INSTRUCTIONS[] = {
     { ZERO_PAGE_X, inst_LSR, "LSR" },
     { IMPLIED, inst_INVALID, "???" },
     { IMPLIED, inst_CLI, "CLI" },
-    { ABSOLUTE_X, inst_EOR, "EOR" },
+    { ABSOLUTE_Y, inst_EOR, "EOR" },
     { IMPLIED, inst_LSR, "LSR" },
     { IMPLIED, inst_INVALID, "???" },
     { ABSOLUTE_X, inst_INVALID, "???" },
-    { ABSOLUTE_Y, inst_EOR, "EOR" },
+    { ABSOLUTE_X, inst_EOR, "EOR" },
     { ABSOLUTE_X, inst_LSR, "LSR" },
     { IMPLIED, inst_INVALID, "???" },
     { IMPLIED, inst_RTS, "RTS" },       // 0x60
@@ -200,11 +200,11 @@ const struct instruction INSTRUCTIONS[] = {
     { ZERO_PAGE_X, inst_ROR, "ROR" },
     { IMPLIED, inst_INVALID, "???" },
     { IMPLIED, inst_SEI, "SEI" },
-    { ABSOLUTE_X, inst_ADC, "ADC" },
+    { ABSOLUTE_Y, inst_ADC, "ADC" },
     { IMPLIED, inst_ROR, "ROR" },
     { IMPLIED, inst_INVALID, "???" },
     { ABSOLUTE_X, inst_INVALID, "???" },
-    { ABSOLUTE_Y, inst_ADC, "ADC" },
+    { ABSOLUTE_X, inst_ADC, "ADC" },
     { ABSOLUTE_X, inst_ROR, "ROR" },
     { IMPLIED, inst_INVALID, "???" },
     { IMMEDIATE, inst_STY, "STY" },     // 0x80
@@ -232,11 +232,11 @@ const struct instruction INSTRUCTIONS[] = {
     { ZERO_PAGE_X, inst_STX, "STX" },
     { IMPLIED, inst_INVALID, "???" },
     { IMPLIED, inst_TYA, "TYA" },
-    { ABSOLUTE_X, inst_STA, "STA" },
+    { ABSOLUTE_Y, inst_STA, "STA" },
     { IMPLIED, inst_TXS, "TXS" },
     { IMPLIED, inst_INVALID, "???" },
     { ABSOLUTE_X, inst_STY, "STY" },
-    { ABSOLUTE_Y, inst_STA, "STA" },
+    { ABSOLUTE_X, inst_STA, "STA" },
     { ABSOLUTE_X, inst_STX, "STX" },
     { IMPLIED, inst_INVALID, "???" },
     { IMMEDIATE, inst_LDY, "LDY" },     // 0xa0
@@ -264,11 +264,11 @@ const struct instruction INSTRUCTIONS[] = {
     { ZERO_PAGE_X, inst_LDX, "LDX" },
     { IMPLIED, inst_INVALID, "???" },
     { IMPLIED, inst_CLV, "CLV" },
-    { ABSOLUTE_X, inst_LDA, "LDA" },
+    { ABSOLUTE_Y, inst_LDA, "LDA" },
     { IMPLIED, inst_TSX, "TSX" },
     { IMPLIED, inst_INVALID, "???" },
     { ABSOLUTE_X, inst_LDY, "LDY" },
-    { ABSOLUTE_Y, inst_LDA, "LDA" },
+    { ABSOLUTE_X, inst_LDA, "LDA" },
     { ABSOLUTE_X, inst_LDX, "LDX" },
     { IMPLIED, inst_INVALID, "???" },
     { IMMEDIATE, inst_CPY, "CPY" },     // 0xc0
@@ -296,11 +296,11 @@ const struct instruction INSTRUCTIONS[] = {
     { ZERO_PAGE_X, inst_DEC, "DEC" },
     { IMPLIED, inst_INVALID, "???" },
     { IMPLIED, inst_CLD, "CLD" },
-    { ABSOLUTE_X, inst_CMP, "CMP" },
+    { ABSOLUTE_Y, inst_CMP, "CMP" },
     { IMPLIED, inst_DEC, "DEC" },
     { IMPLIED, inst_INVALID, "???" },
     { ABSOLUTE_X, inst_CPY, "CPY" },
-    { ABSOLUTE_Y, inst_CMP, "CMP" },
+    { ABSOLUTE_X, inst_CMP, "CMP" },
     { ABSOLUTE_X, inst_DEC, "DEC" },
     { IMPLIED, inst_INVALID, "???" },
     { IMMEDIATE, inst_CPX, "CPX" },     // 0xe0
@@ -328,11 +328,11 @@ const struct instruction INSTRUCTIONS[] = {
     { ZERO_PAGE_X, inst_INC, "INC" },
     { IMPLIED, inst_INVALID, "???" },
     { IMPLIED, inst_SED, "SED" },
-    { ABSOLUTE_X, inst_SBC, "SBC" },
+    { ABSOLUTE_Y, inst_SBC, "SBC" },
     { IMPLIED, inst_INC, "INC" },
     { IMPLIED, inst_INVALID, "???" },
     { ABSOLUTE_X, inst_CPX, "CPX" },
-    { ABSOLUTE_Y, inst_SBC, "SBC" },
+    { ABSOLUTE_X, inst_SBC, "SBC" },
     { ABSOLUTE_X, inst_INC, "INC" },
     { IMPLIED, inst_INVALID, "???" },
 };

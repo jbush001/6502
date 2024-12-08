@@ -92,8 +92,8 @@ def main():
     set_inst('???01101', 0, 'ABSOLUTE')
     set_inst('???10001', 0, 'IND_ZERO_PAGE_Y')
     set_inst('???10101', 0, 'ZERO_PAGE_X')
-    set_inst('???11001', 0, 'ABSOLUTE_X')
-    set_inst('???11101', 0, 'ABSOLUTE_Y')
+    set_inst('???11001', 0, 'ABSOLUTE_Y')
+    set_inst('???11101', 0, 'ABSOLUTE_X')
 
     set_inst('000???01', 1, 'ORA')
     set_inst('001???01', 1, 'AND')
