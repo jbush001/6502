@@ -101,15 +101,15 @@ uint16_t get_addr(struct m6502 *proc, enum address_mode mode) {
 }
 
 uint8_t get_operand(struct m6502 *proc, enum address_mode mode) {
-    // This shouldn't happen, because an implied instruction handler should
-    // not call get_operand.
-    assert(mode != IMPLIED);
+    if (mode == IMPLIED) {
+        return proc->a;
+    }
 
     if (mode == IMMEDIATE) {
         return read8(proc, proc->pc++);
-    } else {
-        return read8(proc, get_addr(proc, mode));
     }
+
+    return read8(proc, get_addr(proc, mode));
 }
 
 void set_zn(struct m6502 *proc, uint8_t value) {
@@ -118,11 +118,12 @@ void set_zn(struct m6502 *proc, uint8_t value) {
 }
 
 void inst_INVALID(struct m6502 *proc, enum address_mode mode) {
-    printf("invalid instruction at $%04x", proc->pc);
+    printf("invalid instruction at $%04x\n", proc->pc - 1);
     proc->running = 0;
 }
 
 void inst_BRK(struct m6502 *proc, enum address_mode mode) {
+    printf("brk\n");
     proc->running = 0;
 }
 
@@ -132,40 +133,33 @@ void inst_NOP(struct m6502 *proc, enum address_mode mode) {
 //
 // Arithmetic
 //
+#define DO_UNOP(__op__) \
+   if (mode == IMPLIED) { \
+        uint8_t old_val = proc->a; \
+        uint8_t new_val = __op__; \
+        proc->a = new_val; \
+        set_zn(proc, proc->a); \
+    } else { \
+        uint16_t addr = get_addr(proc, mode); \
+        uint8_t old_val = read8(proc, addr); \
+        uint8_t new_val = __op__; \
+        write8(proc, addr, new_val); \
+    }
+
 void inst_LSR(struct m6502 *proc, enum address_mode mode) {
+    DO_UNOP((old_val >> 1); proc->c = (old_val >> 7) & 1);
 }
 
 void inst_ASL(struct m6502 *proc, enum address_mode mode) {
+    DO_UNOP((old_val << 1); proc->c = (old_val >> 7) & 1);
 }
 
 void inst_ROL(struct m6502 *proc, enum address_mode mode) {
-    if (mode == IMPLIED) {
-        uint8_t new_a = (proc->a << 1) | proc->c;
-        proc->c = (proc->a >> 7) & 1;
-        proc->a = new_a;
-        set_zn(proc, proc->a);
-    } else {
-        uint16_t addr = get_addr(proc, mode);
-        uint8_t val = read8(proc, addr);
-        uint8_t new_val = (val << 1) | proc->c;
-        proc->c = (val >> 7) & 1;
-        write8(proc, addr, new_val);
-    }
+    DO_UNOP((old_val << 1) | proc->c; proc->c = (old_val >> 7) & 1);
 }
 
 void inst_ROR(struct m6502 *proc, enum address_mode mode) {
-    if (mode == IMPLIED) {
-        uint8_t new_a = (proc->a >> 1) | (proc->c << 7);
-        proc->c = proc->a & 1;
-        proc->a = new_a;
-        set_zn(proc, proc->a);
-    } else {
-        uint16_t addr = get_addr(proc, mode);
-        uint8_t val = read8(proc, addr);
-        uint8_t new_val = (val >> 1) | (proc->c << 7);
-        proc->c = val & 1;
-        write8(proc, addr, new_val);
-    }
+    DO_UNOP((old_val >> 1) | (proc->c << 7); proc->c = old_val & 1);
 }
 
 void inst_EOR(struct m6502 *proc, enum address_mode mode) {
@@ -302,9 +296,11 @@ void inst_TYA(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_PHA(struct m6502 *proc, enum address_mode mode) {
+    write8(proc, proc->s-- + 0x100, proc->a);
 }
 
 void inst_PLA(struct m6502 *proc, enum address_mode mode) {
+    proc->a = read8(proc, ++proc->s + 0x100);
 }
 
 void inst_PHP(struct m6502 *proc, enum address_mode mode) {
@@ -413,9 +409,16 @@ void inst_JMP(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_JSR(struct m6502 *proc, enum address_mode mode) {
+    uint16_t target = read16(proc, proc->pc);
+    write8(proc, proc->s-- + 0x100, proc->pc & 0xff);
+    write8(proc, proc->s-- + 0x100, proc->pc >> 8);
+    proc->pc = target;
 }
 
 void inst_RTS(struct m6502 *proc, enum address_mode mode) {
+    uint16_t ra = read8(proc, ++proc->s + 0x100);
+    ra = ra | (read8(proc, ++proc->s + 0x100) << 8);
+    proc->pc = ra;
 }
 
 void inst_RTI(struct m6502 *proc, enum address_mode mode) {

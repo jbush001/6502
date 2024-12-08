@@ -2,11 +2,9 @@
 
                     seg code
                     org $0000
-reset               jmp (jumpptr)
+reset               ror val
+                    lda val
                     brk
-mylabel             lda #$58
-                    brk
-
                     seg variables
                     org 100
-jumpptr             dc.w mylabel
+val                 dc.b $1
