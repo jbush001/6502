@@ -43,48 +43,48 @@ struct m6502 {
     int running;
 };
 
-uint8_t read8(struct m6502 *proc, uint16_t addr) {
+uint8_t read_mem_u8(struct m6502 *proc, uint16_t addr) {
     return proc->memory[addr];
 }
 
-void write8(struct m6502 *proc, uint16_t addr, uint8_t val) {
+void write_mem_u8(struct m6502 *proc, uint16_t addr, uint8_t val) {
     proc->memory[addr] = val;
 }
 
-uint16_t read16(struct m6502 *proc, uint16_t addr) {
+uint16_t read_mem_u16(struct m6502 *proc, uint16_t addr) {
     return proc->memory[addr] | (proc->memory[addr + 1] << 8);
 }
 
-uint16_t get_addr(struct m6502 *proc, enum address_mode mode) {
+uint16_t get_operand_addr(struct m6502 *proc, enum address_mode mode) {
     switch (mode) {
         case IND_ZERO_PAGE_X: { // ($hh, X)
-            unsigned short addr = read8(proc, proc->pc++) + proc->x;
-            return read16(proc, addr);
+            unsigned short addr = read_mem_u8(proc, proc->pc++) + proc->x;
+            return read_mem_u16(proc, addr);
         }
 
         case ZERO_PAGE: // $hh
-            return read8(proc, proc->pc++);
+            return read_mem_u8(proc, proc->pc++);
 
         case ABSOLUTE: { // $hhhh
-            unsigned short addr = read16(proc, proc->pc);
+            unsigned short addr = read_mem_u16(proc, proc->pc);
             proc->pc += 2;
             return addr;
         }
 
         case IND_ZERO_PAGE_Y: // ($hh), y
-            return read16(proc, read8(proc, proc->pc++)) + proc->y;
+            return read_mem_u16(proc, read_mem_u8(proc, proc->pc++)) + proc->y;
 
         case ZERO_PAGE_X: // $hh, X
-            return read8(proc, proc->pc++) + proc->x;
+            return read_mem_u8(proc, proc->pc++) + proc->x;
 
         case ABSOLUTE_X: { // $hhhh, X
-            unsigned short addr = read16(proc, proc->pc);
+            unsigned short addr = read_mem_u16(proc, proc->pc);
             proc->pc += 2;
             return addr + proc->x;
         }
 
         case ABSOLUTE_Y: { // $hhhh, Y
-            unsigned short addr = read16(proc, proc->pc);
+            unsigned short addr = read_mem_u16(proc, proc->pc);
             proc->pc += 2;
             return addr + proc->y;
         }
@@ -97,19 +97,19 @@ uint16_t get_addr(struct m6502 *proc, enum address_mode mode) {
     }
 }
 
-uint8_t get_operand(struct m6502 *proc, enum address_mode mode) {
+uint8_t get_operand_value(struct m6502 *proc, enum address_mode mode) {
     if (mode == IMPLIED) {
         return proc->a;
     }
 
     if (mode == IMMEDIATE) {
-        return read8(proc, proc->pc++);
+        return read_mem_u8(proc, proc->pc++);
     }
 
-    return read8(proc, get_addr(proc, mode));
+    return read_mem_u8(proc, get_operand_addr(proc, mode));
 }
 
-void set_zn(struct m6502 *proc, uint8_t value) {
+void set_nz_flags(struct m6502 *proc, uint8_t value) {
     proc->n = (value >> 7) & 1;
     proc->z = (value & 0xff) == 0;
 }
@@ -129,76 +129,71 @@ void inst_NOP(struct m6502 *proc, enum address_mode mode) {
 //
 // Arithmetic
 //
-#define DO_UNOP(__op__) \
+#define UNARY_OP(__op__) \
    if (mode == IMPLIED) { \
         uint8_t old_val = proc->a; \
         uint8_t new_val = __op__; \
         proc->a = new_val; \
-        set_zn(proc, proc->a); \
+        set_nz_flags(proc, proc->a); \
     } else { \
-        uint16_t addr = get_addr(proc, mode); \
-        uint8_t old_val = read8(proc, addr); \
+        uint16_t addr = get_operand_addr(proc, mode); \
+        uint8_t old_val = read_mem_u8(proc, addr); \
         uint8_t new_val = __op__; \
-        write8(proc, addr, new_val); \
+        write_mem_u8(proc, addr, new_val); \
     }
 
 void inst_LSR(struct m6502 *proc, enum address_mode mode) {
-    DO_UNOP((old_val >> 1); proc->c = (old_val >> 7) & 1);
+    UNARY_OP((old_val >> 1); proc->c = (old_val >> 7) & 1);
 }
 
 void inst_ASL(struct m6502 *proc, enum address_mode mode) {
-    DO_UNOP((old_val << 1); proc->c = (old_val >> 7) & 1);
+    UNARY_OP((old_val << 1); proc->c = (old_val >> 7) & 1);
 }
 
 void inst_ROL(struct m6502 *proc, enum address_mode mode) {
-    DO_UNOP((old_val << 1) | proc->c; proc->c = (old_val >> 7) & 1);
+    UNARY_OP((old_val << 1) | proc->c; proc->c = (old_val >> 7) & 1);
 }
 
 void inst_ROR(struct m6502 *proc, enum address_mode mode) {
-    DO_UNOP((old_val >> 1) | (proc->c << 7); proc->c = old_val & 1);
+    UNARY_OP((old_val >> 1) | (proc->c << 7); proc->c = old_val & 1);
 }
 
 void inst_EOR(struct m6502 *proc, enum address_mode mode) {
-    proc->a ^= get_operand(proc, mode);
-    set_zn(proc, proc->a);
+    proc->a ^= get_operand_value(proc, mode);
+    set_nz_flags(proc, proc->a);
 }
 
 void inst_ORA(struct m6502 *proc, enum address_mode mode) {
-    proc->a |= get_operand(proc, mode);
-    set_zn(proc, proc->a);
+    proc->a |= get_operand_value(proc, mode);
+    set_nz_flags(proc, proc->a);
 }
 
 void inst_AND(struct m6502 *proc, enum address_mode mode) {
-    proc->a &= get_operand(proc, mode);
-    set_zn(proc, proc->a);
+    proc->a &= get_operand_value(proc, mode);
+    set_nz_flags(proc, proc->a);
 }
 
 void inst_BIT(struct m6502 *proc, enum address_mode mode) {
     assert(0); // Not implemented
 }
 
-
 uint8_t negate(uint8_t val) {
     return (val ^ 0xff) + 1;
 }
 
-// Set flags as a side effect
-// Cases:
-// V C   Unsigned         Signed
-// 0 0   64 +  80 = 144    64 +   80 =  144
-// 1 0   80 +  80 = 160    80 +   80 =  -96
-// 0 1  192 + 176 = 368   -64 +  -80 = -144
-// 1 1  208 + 144 = 352   -48 + -112 =   96
-//
 uint8_t add(struct m6502 *proc, uint8_t op1, uint8_t op2) {
     uint16_t uresult = op1 + op2 + proc->c;
-    set_zn(proc, uresult);
+    set_nz_flags(proc, uresult);
+
+    // Carry occurs when an unsigned value does not fit in the
+    // register. e.g. 208 + 144 = 352
     proc->c = (uresult >> 8) & 1;
 
     // Overflow indicates a signed arithmetic operation has wrapped
     // around, inverting the sign. It can only occur when the signs
     // of the two operands are the same and the result has a different
-    // sign.
+    // sign. e.g. in 8 bit Two's complement:
+    // -48 + -112 = 96 and 80 + 80 = -96.
     int sign1 = op1 >> 7;
     int sign2 = op2 >> 7;
     int result_sign = (uresult >> 7) & 1;
@@ -208,83 +203,83 @@ uint8_t add(struct m6502 *proc, uint8_t op1, uint8_t op2) {
 }
 
 void inst_CMP(struct m6502 *proc, enum address_mode mode) {
-    add(proc, proc->a, negate(get_operand(proc, mode)));
+    add(proc, proc->a, negate(get_operand_value(proc, mode)));
 }
 
 void inst_CPX(struct m6502 *proc, enum address_mode mode) {
-    add(proc, proc->x, negate(get_operand(proc, mode)));
+    add(proc, proc->x, negate(get_operand_value(proc, mode)));
 }
 
 void inst_CPY(struct m6502 *proc, enum address_mode mode) {
-    add(proc, proc->y, negate(get_operand(proc, mode)));
+    add(proc, proc->y, negate(get_operand_value(proc, mode)));
 }
 
 void inst_ADC(struct m6502 *proc, enum address_mode mode) {
-    proc->a = add(proc, proc->a, get_operand(proc, mode));
+    proc->a = add(proc, proc->a, get_operand_value(proc, mode));
 }
 
 void inst_SBC(struct m6502 *proc, enum address_mode mode) {
-    proc->a = add(proc, proc->a, negate(get_operand(proc, mode)));
+    proc->a = add(proc, proc->a, negate(get_operand_value(proc, mode)));
 }
 
 void inst_INC(struct m6502 *proc, enum address_mode mode) {
-    uint16_t addr = get_addr(proc, mode);
-    uint8_t new_val = read8(proc, addr) + 1;
-    set_zn(proc, new_val);
-    write8(proc, addr, new_val);
+    uint16_t addr = get_operand_addr(proc, mode);
+    uint8_t new_val = read_mem_u8(proc, addr) + 1;
+    set_nz_flags(proc, new_val);
+    write_mem_u8(proc, addr, new_val);
 }
 
 void inst_DEC(struct m6502 *proc, enum address_mode mode) {
-    uint16_t addr = get_addr(proc, mode);
-    uint8_t new_val = read8(proc, addr) - 1;
-    set_zn(proc, new_val);
-    write8(proc, addr, new_val);
+    uint16_t addr = get_operand_addr(proc, mode);
+    uint8_t new_val = read_mem_u8(proc, addr) - 1;
+    set_nz_flags(proc, new_val);
+    write_mem_u8(proc, addr, new_val);
 }
 
 void inst_INX(struct m6502 *proc, enum address_mode mode) {
-    set_zn(proc, ++proc->x);
+    set_nz_flags(proc, ++proc->x);
 }
 
 void inst_DEX(struct m6502 *proc, enum address_mode mode) {
-    set_zn(proc, --proc->x);
+    set_nz_flags(proc, --proc->x);
 }
 
 void inst_INY(struct m6502 *proc, enum address_mode mode) {
-    set_zn(proc, ++proc->y);
+    set_nz_flags(proc, ++proc->y);
 }
 
 void inst_DEY(struct m6502 *proc, enum address_mode mode) {
-    set_zn(proc, --proc->y);
+    set_nz_flags(proc, --proc->y);
 }
 
 //
 // Register moves
 //
 void inst_LDA(struct m6502 *proc, enum address_mode mode) {
-    proc->a = get_operand(proc, mode);
-    set_zn(proc, proc->a);
-}
-
-void inst_LDX(struct m6502 *proc, enum address_mode mode) {
-    proc->x = get_operand(proc, mode);
-    set_zn(proc, proc->a);
-}
-
-void inst_LDY(struct m6502 *proc, enum address_mode mode) {
-    proc->y = get_operand(proc, mode);
-    set_zn(proc, proc->y);
+    proc->a = get_operand_value(proc, mode);
+    set_nz_flags(proc, proc->a);
 }
 
 void inst_STA(struct m6502 *proc, enum address_mode mode) {
-    write8(proc, get_addr(proc, mode), proc->a);
+    write_mem_u8(proc, get_operand_addr(proc, mode), proc->a);
+}
+
+void inst_LDX(struct m6502 *proc, enum address_mode mode) {
+    proc->x = get_operand_value(proc, mode);
+    set_nz_flags(proc, proc->a);
 }
 
 void inst_STX(struct m6502 *proc, enum address_mode mode) {
-    write8(proc, get_addr(proc, mode), proc->x);
+    write_mem_u8(proc, get_operand_addr(proc, mode), proc->x);
+}
+
+void inst_LDY(struct m6502 *proc, enum address_mode mode) {
+    proc->y = get_operand_value(proc, mode);
+    set_nz_flags(proc, proc->y);
 }
 
 void inst_STY(struct m6502 *proc, enum address_mode mode) {
-    write8(proc, get_addr(proc, mode), proc->y);
+    write_mem_u8(proc, get_operand_addr(proc, mode), proc->y);
 }
 
 void inst_TXS(struct m6502 *proc, enum address_mode mode) {
@@ -312,17 +307,21 @@ void inst_TYA(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_PHA(struct m6502 *proc, enum address_mode mode) {
-    write8(proc, proc->s-- + 0x100, proc->a);
+    write_mem_u8(proc, proc->s-- + 0x100, proc->a);
 }
 
 void inst_PLA(struct m6502 *proc, enum address_mode mode) {
-    proc->a = read8(proc, ++proc->s + 0x100);
+    proc->a = read_mem_u8(proc, ++proc->s + 0x100);
 }
 
 void inst_PHP(struct m6502 *proc, enum address_mode mode) {
+    // XXX not implemented: push flags on the stack
+    assert(0);
 }
 
 void inst_PLP(struct m6502 *proc, enum address_mode mode) {
+    // XXX not implemented, pop flags from the stack.
+    assert(0);
 }
 
 //
@@ -360,56 +359,56 @@ void inst_CLV(struct m6502 *proc, enum address_mode mode) {
 // Branch
 //
 void inst_BCS(struct m6502 *proc, enum address_mode mode) {
-    int8_t offset = read8(proc, proc->pc++);
+    int8_t offset = read_mem_u8(proc, proc->pc++);
     if (proc->c) {
         proc->pc += offset;
     }
 }
 
 void inst_BCC(struct m6502 *proc, enum address_mode mode) {
-    int8_t offset = read8(proc, proc->pc++);
+    int8_t offset = read_mem_u8(proc, proc->pc++);
     if (!proc->c) {
         proc->pc += offset;
     }
 }
 
 void inst_BVS(struct m6502 *proc, enum address_mode mode) {
-    int8_t offset = read8(proc, proc->pc++);
+    int8_t offset = read_mem_u8(proc, proc->pc++);
     if (proc->v) {
         proc->pc += offset;
     }
 }
 
 void inst_BVC(struct m6502 *proc, enum address_mode mode) {
-    int8_t offset = read8(proc, proc->pc++);
+    int8_t offset = read_mem_u8(proc, proc->pc++);
     if (!proc->v) {
         proc->pc += offset;
     }
 }
 
 void inst_BMI(struct m6502 *proc, enum address_mode mode) {
-    int8_t offset = read8(proc, proc->pc++);
+    int8_t offset = read_mem_u8(proc, proc->pc++);
     if (proc->n) {
         proc->pc += offset;
     }
 }
 
 void inst_BPL(struct m6502 *proc, enum address_mode mode) {
-    int8_t offset = read8(proc, proc->pc++);
+    int8_t offset = read_mem_u8(proc, proc->pc++);
     if (!proc->n) {
         proc->pc += offset;
     }
 }
 
 void inst_BEQ(struct m6502 *proc, enum address_mode mode) {
-    int8_t offset = read8(proc, proc->pc++);
+    int8_t offset = read_mem_u8(proc, proc->pc++);
     if (proc->z) {
         proc->pc += offset;
     }
 }
 
 void inst_BNE(struct m6502 *proc, enum address_mode mode) {
-    int8_t offset = read8(proc, proc->pc++);
+    int8_t offset = read_mem_u8(proc, proc->pc++);
     if (!proc->z) {
         proc->pc += offset;
     }
@@ -417,23 +416,23 @@ void inst_BNE(struct m6502 *proc, enum address_mode mode) {
 
 void inst_JMP(struct m6502 *proc, enum address_mode mode) {
     if (mode == ABSOLUTE) {
-        proc->pc = read16(proc, proc->pc);
+        proc->pc = read_mem_u16(proc, proc->pc);
     } else {
         // Indirect
-        proc->pc = read16(proc, read16(proc, proc->pc));
+        proc->pc = read_mem_u16(proc, read_mem_u16(proc, proc->pc));
     }
 }
 
 void inst_JSR(struct m6502 *proc, enum address_mode mode) {
-    uint16_t target = read16(proc, proc->pc);
-    write8(proc, proc->s-- + 0x100, proc->pc & 0xff);
-    write8(proc, proc->s-- + 0x100, proc->pc >> 8);
+    uint16_t target = read_mem_u16(proc, proc->pc);
+    write_mem_u8(proc, proc->s-- + 0x100, proc->pc & 0xff);
+    write_mem_u8(proc, proc->s-- + 0x100, proc->pc >> 8);
     proc->pc = target;
 }
 
 void inst_RTS(struct m6502 *proc, enum address_mode mode) {
-    uint16_t ra = read8(proc, ++proc->s + 0x100);
-    ra = ra | (read8(proc, ++proc->s + 0x100) << 8);
+    uint16_t ra = read_mem_u8(proc, ++proc->s + 0x100);
+    ra = ra | (read_mem_u8(proc, ++proc->s + 0x100) << 8);
     proc->pc = ra;
 }
 
@@ -441,9 +440,9 @@ void inst_RTI(struct m6502 *proc, enum address_mode mode) {
     assert(0); // Not implemented
 }
 
-void mainloop(struct m6502 *proc) {
+void run_emulator(struct m6502 *proc) {
     while (proc->running) {
-        int opcode = read8(proc, proc->pc++);
+        int opcode = read_mem_u8(proc, proc->pc++);
         const struct instruction *inst = &INSTRUCTIONS[opcode];
         inst->func(proc, inst->mode);
     }
@@ -562,7 +561,7 @@ int main(int argc, const char *argv[]) {
     fclose(file);
 
     disassemble(0, proc.memory, 16);
-    mainloop(&proc);
+    run_emulator(&proc);
     dump_regs(&proc);
 
     return 0;
