@@ -658,6 +658,155 @@ void test_transfer() {
     TEST_EQ(proc.z, 0);
 }
 
+void test_inc_dec() {
+    struct m6502 proc;
+    init_proc(&proc);
+
+    // Increment X
+    proc.memory[0] = 0xe8; // INX
+    proc.memory[1] = 0;
+    proc.x = 0x23;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.x, 0x24);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 0);
+
+    // Increment to negative
+    proc.x = 0x7f;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.x, 0x80);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 1);
+
+    // Increment to zero
+    proc.x = 0xff;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.x, 0x0);
+    TEST_EQ(proc.z, 1);
+    TEST_EQ(proc.n, 0);
+
+    // Decrement X
+    proc.memory[0] = 0xca; // DEX
+    proc.memory[1] = 0;
+    proc.x = 0x37;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.x, 0x36);
+
+    // Increment Y
+    proc.memory[0] = 0xc8; // INY
+    proc.memory[1] = 0;
+    proc.y = 0x23;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.y, 0x24);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 0);
+
+    // Decrement Y
+    proc.memory[0] = 0x88; // DEY
+    proc.memory[1] = 0;
+    proc.y = 0x37;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.y, 0x36);
+
+    // Increment memory location
+    proc.memory[0] = 0xe6; // INC $f0
+    proc.memory[1] = 0xf0;
+    proc.memory[2] = 0;
+    proc.memory[0xf0] = 0x82;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.memory[0xf0], 0x83);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 1);
+
+    // Decrement memory location
+    proc.memory[0] = 0xc6; // DEC $f0
+    proc.memory[1] = 0xf7;
+    proc.memory[2] = 0;
+    proc.memory[0xf7] = 0x1;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.memory[0xf7], 0);
+    TEST_EQ(proc.z, 1);
+    TEST_EQ(proc.n, 0);
+}
+
+void test_set_clear_flags() {
+    struct m6502 proc;
+    init_proc(&proc);
+
+    proc.memory[0] = 0x18; // CLC
+    proc.memory[1] = 0;
+    proc.c = 1;
+    run_emulator(&proc);
+    TEST_EQ(proc.c, 0);
+
+    proc.memory[0] = 0x38; // SEC
+    proc.memory[1] = 0;
+    proc.pc = 0;
+    proc.c = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.c, 1);
+
+    proc.memory[0] = 0xf8; // SED
+    proc.memory[1] = 0;
+    proc.pc = 0;
+    proc.d = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.d, 1);
+
+    proc.memory[0] = 0xd8; // CLD
+    proc.memory[1] = 0;
+    proc.pc = 0;
+    proc.d = 1;
+    run_emulator(&proc);
+    TEST_EQ(proc.d, 0);
+
+    proc.memory[0] = 0xb8; // CLV
+    proc.memory[1] = 0;
+    proc.pc = 0;
+    proc.v = 1;
+    run_emulator(&proc);
+    TEST_EQ(proc.v, 0);
+}
+
+// XXX comparisons should not look at carry-in
+void test_compare() {
+    struct m6502 proc;
+    init_proc(&proc);
+
+    // Greater
+    proc.memory[0] = 0xc9; // CMP #$77
+    proc.memory[1] = 0x77;
+    proc.memory[2] = 0;
+    proc.a = 0x76;
+    run_emulator(&proc);
+    TEST_EQ(proc.n, 1);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.a, 0x76);
+
+    // Less
+    proc.a = 0x78;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.n, 0);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.a, 0x78);
+
+    // Equal
+    proc.a = 0x77;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.n, 0);
+    TEST_EQ(proc.z, 1);
+    TEST_EQ(proc.a, 0x77);
+}
+
 int main() {
     test_lda();
     test_sta();
@@ -669,6 +818,10 @@ int main() {
     test_jsr_rts();
     test_stack();
     test_transfer();
+    test_inc_dec();
+    test_set_clear_flags();
+    test_compare();
+
     printf("PASS\n");
     return 0;
 }

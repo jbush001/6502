@@ -182,14 +182,17 @@ uint8_t add(struct m6502 *proc, uint8_t op1, uint8_t op2) {
 }
 
 void inst_CMP(struct m6502 *proc, enum address_mode mode) {
+    proc->c = 0;
     add(proc, proc->a, negate(get_operand_value(proc, mode)));
 }
 
 void inst_CPX(struct m6502 *proc, enum address_mode mode) {
+    proc->c = 0;
     add(proc, proc->x, negate(get_operand_value(proc, mode)));
 }
 
 void inst_CPY(struct m6502 *proc, enum address_mode mode) {
+    proc->c = 0;
     add(proc, proc->y, negate(get_operand_value(proc, mode)));
 }
 

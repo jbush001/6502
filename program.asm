@@ -2,7 +2,7 @@
 
                     seg code
                     org $0000
-reset               lda #$24
+reset               cmp #$77
                     sbc #$23
                     brk
                     seg variables
