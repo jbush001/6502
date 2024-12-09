@@ -2,75 +2,75 @@
 struct m6502;
 
 enum address_mode {
-    ZERO_PAGE_X,
     ABSOLUTE,
-    IMMEDIATE,
     ABSOLUTE_X,
+    ABSOLUTE_Y,
+    IMMEDIATE,
     IMPLIED,
+    INDIRECT,
+    IND_ZERO_PAGE_X,
     IND_ZERO_PAGE_Y,
     ZERO_PAGE,
-    IND_ZERO_PAGE_X,
-    ABSOLUTE_Y,
-    INDIRECT,
+    ZERO_PAGE_X,
 };
 
-void inst_LDX(struct m6502 *proc, enum address_mode mode);
-void inst_DEC(struct m6502 *proc, enum address_mode mode);
-void inst_INVALID(struct m6502 *proc, enum address_mode mode);
-void inst_LDA(struct m6502 *proc, enum address_mode mode);
-void inst_JSR(struct m6502 *proc, enum address_mode mode);
-void inst_TYA(struct m6502 *proc, enum address_mode mode);
-void inst_RTI(struct m6502 *proc, enum address_mode mode);
 void inst_ADC(struct m6502 *proc, enum address_mode mode);
-void inst_CPX(struct m6502 *proc, enum address_mode mode);
-void inst_INC(struct m6502 *proc, enum address_mode mode);
-void inst_PHP(struct m6502 *proc, enum address_mode mode);
-void inst_CLC(struct m6502 *proc, enum address_mode mode);
-void inst_LSR(struct m6502 *proc, enum address_mode mode);
-void inst_PHA(struct m6502 *proc, enum address_mode mode);
-void inst_BPL(struct m6502 *proc, enum address_mode mode);
-void inst_TAX(struct m6502 *proc, enum address_mode mode);
-void inst_SBC(struct m6502 *proc, enum address_mode mode);
-void inst_STY(struct m6502 *proc, enum address_mode mode);
-void inst_BIT(struct m6502 *proc, enum address_mode mode);
-void inst_EOR(struct m6502 *proc, enum address_mode mode);
-void inst_RTS(struct m6502 *proc, enum address_mode mode);
-void inst_DEY(struct m6502 *proc, enum address_mode mode);
-void inst_TSX(struct m6502 *proc, enum address_mode mode);
-void inst_CLV(struct m6502 *proc, enum address_mode mode);
-void inst_DEX(struct m6502 *proc, enum address_mode mode);
-void inst_SED(struct m6502 *proc, enum address_mode mode);
-void inst_BVC(struct m6502 *proc, enum address_mode mode);
-void inst_BNE(struct m6502 *proc, enum address_mode mode);
-void inst_TXS(struct m6502 *proc, enum address_mode mode);
-void inst_PLA(struct m6502 *proc, enum address_mode mode);
-void inst_BMI(struct m6502 *proc, enum address_mode mode);
-void inst_STA(struct m6502 *proc, enum address_mode mode);
-void inst_BCC(struct m6502 *proc, enum address_mode mode);
-void inst_CLD(struct m6502 *proc, enum address_mode mode);
-void inst_ROL(struct m6502 *proc, enum address_mode mode);
 void inst_AND(struct m6502 *proc, enum address_mode mode);
-void inst_LDY(struct m6502 *proc, enum address_mode mode);
-void inst_BRK(struct m6502 *proc, enum address_mode mode);
+void inst_ASL(struct m6502 *proc, enum address_mode mode);
+void inst_BCC(struct m6502 *proc, enum address_mode mode);
 void inst_BCS(struct m6502 *proc, enum address_mode mode);
 void inst_BEQ(struct m6502 *proc, enum address_mode mode);
-void inst_TXA(struct m6502 *proc, enum address_mode mode);
-void inst_STX(struct m6502 *proc, enum address_mode mode);
+void inst_BIT(struct m6502 *proc, enum address_mode mode);
+void inst_BMI(struct m6502 *proc, enum address_mode mode);
+void inst_BNE(struct m6502 *proc, enum address_mode mode);
+void inst_BPL(struct m6502 *proc, enum address_mode mode);
+void inst_BRK(struct m6502 *proc, enum address_mode mode);
+void inst_BVC(struct m6502 *proc, enum address_mode mode);
 void inst_BVS(struct m6502 *proc, enum address_mode mode);
-void inst_SEC(struct m6502 *proc, enum address_mode mode);
-void inst_CMP(struct m6502 *proc, enum address_mode mode);
-void inst_NOP(struct m6502 *proc, enum address_mode mode);
+void inst_CLC(struct m6502 *proc, enum address_mode mode);
+void inst_CLD(struct m6502 *proc, enum address_mode mode);
 void inst_CLI(struct m6502 *proc, enum address_mode mode);
-void inst_PLP(struct m6502 *proc, enum address_mode mode);
-void inst_ORA(struct m6502 *proc, enum address_mode mode);
+void inst_CLV(struct m6502 *proc, enum address_mode mode);
+void inst_CMP(struct m6502 *proc, enum address_mode mode);
+void inst_CPX(struct m6502 *proc, enum address_mode mode);
 void inst_CPY(struct m6502 *proc, enum address_mode mode);
-void inst_INY(struct m6502 *proc, enum address_mode mode);
+void inst_DEC(struct m6502 *proc, enum address_mode mode);
+void inst_DEX(struct m6502 *proc, enum address_mode mode);
+void inst_DEY(struct m6502 *proc, enum address_mode mode);
+void inst_EOR(struct m6502 *proc, enum address_mode mode);
+void inst_INC(struct m6502 *proc, enum address_mode mode);
+void inst_INVALID(struct m6502 *proc, enum address_mode mode);
 void inst_INX(struct m6502 *proc, enum address_mode mode);
-void inst_ROR(struct m6502 *proc, enum address_mode mode);
-void inst_SEI(struct m6502 *proc, enum address_mode mode);
+void inst_INY(struct m6502 *proc, enum address_mode mode);
 void inst_JMP(struct m6502 *proc, enum address_mode mode);
-void inst_ASL(struct m6502 *proc, enum address_mode mode);
+void inst_JSR(struct m6502 *proc, enum address_mode mode);
+void inst_LDA(struct m6502 *proc, enum address_mode mode);
+void inst_LDX(struct m6502 *proc, enum address_mode mode);
+void inst_LDY(struct m6502 *proc, enum address_mode mode);
+void inst_LSR(struct m6502 *proc, enum address_mode mode);
+void inst_NOP(struct m6502 *proc, enum address_mode mode);
+void inst_ORA(struct m6502 *proc, enum address_mode mode);
+void inst_PHA(struct m6502 *proc, enum address_mode mode);
+void inst_PHP(struct m6502 *proc, enum address_mode mode);
+void inst_PLA(struct m6502 *proc, enum address_mode mode);
+void inst_PLP(struct m6502 *proc, enum address_mode mode);
+void inst_ROL(struct m6502 *proc, enum address_mode mode);
+void inst_ROR(struct m6502 *proc, enum address_mode mode);
+void inst_RTI(struct m6502 *proc, enum address_mode mode);
+void inst_RTS(struct m6502 *proc, enum address_mode mode);
+void inst_SBC(struct m6502 *proc, enum address_mode mode);
+void inst_SEC(struct m6502 *proc, enum address_mode mode);
+void inst_SED(struct m6502 *proc, enum address_mode mode);
+void inst_SEI(struct m6502 *proc, enum address_mode mode);
+void inst_STA(struct m6502 *proc, enum address_mode mode);
+void inst_STX(struct m6502 *proc, enum address_mode mode);
+void inst_STY(struct m6502 *proc, enum address_mode mode);
+void inst_TAX(struct m6502 *proc, enum address_mode mode);
 void inst_TAY(struct m6502 *proc, enum address_mode mode);
+void inst_TSX(struct m6502 *proc, enum address_mode mode);
+void inst_TXA(struct m6502 *proc, enum address_mode mode);
+void inst_TXS(struct m6502 *proc, enum address_mode mode);
+void inst_TYA(struct m6502 *proc, enum address_mode mode);
 
 struct instruction {
     enum address_mode mode;
