@@ -248,7 +248,7 @@ void inst_STA(struct m6502 *proc, enum address_mode mode) {
 
 void inst_LDX(struct m6502 *proc, enum address_mode mode) {
     proc->x = get_operand_value(proc, mode);
-    set_nz_flags(proc, proc->a);
+    set_nz_flags(proc, proc->x);
 }
 
 void inst_STX(struct m6502 *proc, enum address_mode mode) {

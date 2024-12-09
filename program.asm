@@ -2,8 +2,8 @@
 
                     seg code
                     org $0000
-reset               cmp #$77
-                    sbc #$23
+reset               stx $ce
+                    sty $ce
                     brk
                     seg variables
                     org 100

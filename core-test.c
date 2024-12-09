@@ -22,9 +22,13 @@
     if ((x) != (y)) { printf("Test failed (line %d): $%x != $%x\n", \
         __LINE__, (x), (y)); exit(1); } }
 
-void test_lda() {
+void test_ld() {
     struct m6502 proc;
     init_proc(&proc);
+
+    // Try all addressing modes. The code to perform operand fetch
+    // is shared by other instructions, so I don't do this exhaustive
+    // testing for other ones.
 
     // Immediate
     proc.memory[0] = 0xa9; // LDA #$24
@@ -35,59 +39,59 @@ void test_lda() {
     TEST_EQ(proc.n, 0);
 
     // Test N flag
-    proc.pc = 0;
     proc.memory[1] = 0xc5;
+    proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ((uint8_t) proc.a, 0xc5);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 1);
 
     // Test Z flag
-    proc.pc = 0;
     proc.memory[1] = 0;
+    proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ((uint8_t) proc.a, 0);
     TEST_EQ(proc.z, 1);
     TEST_EQ(proc.n, 0);
 
     // Absolute
-    proc.pc = 0;
     proc.memory[0] = 0xad; // LDA $100
     proc.memory[1] = 0;
     proc.memory[2] = 1;
     proc.memory[256] = 0xa9;
+    proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ((uint8_t) proc.a, 0xa9);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 1);
 
     // Zero page
-    proc.pc = 0;
     proc.memory[0] = 0xa5; // LDA $20
     proc.memory[1] = 0x20;
     proc.memory[0x20] = 0x52;
+    proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ((uint8_t) proc.a, 0x52);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
 
     // Absolute indexed
-    proc.pc = 0;
     proc.memory[0] = 0xbd; // LDA $01,X
     proc.memory[1] = 0x01;
     proc.memory[2] = 0x01;
     proc.x = 3;
     proc.memory[0x104] = 0x8f;
+    proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ((uint8_t) proc.a, 0x8f);
 
     // Absolute indexed
-    proc.pc = 0;
     proc.memory[0] = 0xb9; // LDA $02,Y
     proc.memory[1] = 0x02;
     proc.memory[2] = 0x02;
     proc.y = 7;
     proc.memory[0x209] = 0x49;
+    proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ((uint8_t) proc.a, 0x49);
 
@@ -114,7 +118,6 @@ void test_lda() {
     TEST_EQ((uint8_t) proc.a, 0xce);
 
     // Zero page indexed indirect
-    proc.pc = 0;
     proc.memory[0] = 0xa1; // LDA ($13, X)
     proc.memory[1] = 0x13;
     proc.memory[2] = 0;
@@ -122,11 +125,48 @@ void test_lda() {
     proc.memory[0x38] = 0x31;
     proc.memory[0x39] = 0x4;
     proc.memory[0x431] = 0xf5;
+    proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ((uint8_t) proc.a, 0xf5);
+
+    // LDX
+    proc.memory[0] = 0xa2; // LDX #$4d
+    proc.memory[1] = 0x4d;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.x, 0x4d);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 0);
+
+    proc.memory[0] = 0xa6; // LDX $ce
+    proc.memory[1] = 0xce;
+    proc.pc = 0;
+    proc.memory[0xce] = 0x97;
+    run_emulator(&proc);
+    TEST_EQ(proc.x, 0x97);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 1);
+
+    // LDY
+    proc.memory[0] = 0xa0; // LDX #$4d
+    proc.memory[1] = 0x4d;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.y, 0x4d);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 0);
+
+    proc.memory[0] = 0xa4; // LDX $ce
+    proc.memory[1] = 0xce;
+    proc.pc = 0;
+    proc.memory[0xce] = 0x97;
+    run_emulator(&proc);
+    TEST_EQ(proc.y, 0x97);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 1);
 }
 
-void test_sta() {
+void test_st() {
     struct m6502 proc;
     init_proc(&proc);
 
@@ -139,13 +179,31 @@ void test_sta() {
     TEST_EQ(proc.memory[0x120], 0x7b);
 
     // Zero page
-    proc.pc = 0;
     proc.a = 0xef;
     proc.memory[0] = 0x85; // STA $21
     proc.memory[1] = 0x21;
     proc.memory[2] = 0x00;
+    proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ(proc.memory[0x21], 0xef);
+
+    // STX
+    proc.x = 0x22;
+    proc.memory[0] = 0x86; // STX $120
+    proc.memory[1] = 0x40;
+    proc.memory[2] = 0x00;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.memory[0x40], 0x22);
+
+    // STY
+    proc.y = 0x45;
+    proc.memory[0] = 0x84; // STY $120
+    proc.memory[1] = 0x41;
+    proc.memory[2] = 0x00;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.memory[0x41], 0x45);
 }
 
 void test_adc() {
@@ -780,36 +838,70 @@ void test_compare() {
     struct m6502 proc;
     init_proc(&proc);
 
-    // Greater
+    // A < operand
     proc.memory[0] = 0xc9; // CMP #$77
     proc.memory[1] = 0x77;
     proc.memory[2] = 0;
     proc.a = 0x76;
     run_emulator(&proc);
-    TEST_EQ(proc.n, 1);
+    TEST_EQ(proc.c, 0);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.a, 0x76);
 
-    // Less
-    proc.a = 0x78;
-    proc.pc = 0;
-    run_emulator(&proc);
-    TEST_EQ(proc.n, 0);
-    TEST_EQ(proc.z, 0);
-    TEST_EQ(proc.a, 0x78);
-
-    // Equal
+    // A = operand
     proc.a = 0x77;
     proc.pc = 0;
     run_emulator(&proc);
-    TEST_EQ(proc.n, 0);
+    TEST_EQ(proc.c, 1);
     TEST_EQ(proc.z, 1);
     TEST_EQ(proc.a, 0x77);
+
+    // A > operand
+    proc.a = 0x78;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.c, 1);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.a, 0x78);
+
+    // X < operand
+    proc.memory[0] = 0xe0; // CPX #$77
+    proc.x = 0x76;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.c, 0);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.x, 0x76);
+
+    // X > operand
+    proc.x = 0x78;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.c, 1);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.x, 0x78);
+
+    // Y < operand
+    proc.memory[0] = 0xc0; // CPY #$77
+    proc.y = 0x76;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.c, 0);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.y, 0x76);
+
+    // Y > operand
+    proc.y = 0x78;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.c, 1);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.y, 0x78);
 }
 
 int main() {
-    test_lda();
-    test_sta();
+    test_ld();
+    test_st();
     test_adc();
     test_sbc();
     test_branch();
