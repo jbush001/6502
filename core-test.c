@@ -26,10 +26,6 @@ void test_ld() {
     struct m6502 proc;
     init_proc(&proc);
 
-    // Try all addressing modes. The code to perform operand fetch
-    // is shared by other instructions, so I don't do this exhaustive
-    // testing for other ones.
-
     // Immediate
     proc.memory[0] = 0xa9; // LDA #$24
     proc.memory[1] = 0x24;
@@ -86,7 +82,7 @@ void test_ld() {
     TEST_EQ((uint8_t) proc.a, 0x8f);
 
     // Absolute indexed
-    proc.memory[0] = 0xb9; // LDA $02,Y
+    proc.memory[0] = 0xb9; // LDA $202,Y
     proc.memory[1] = 0x02;
     proc.memory[2] = 0x02;
     proc.y = 7;
@@ -96,17 +92,16 @@ void test_ld() {
     TEST_EQ((uint8_t) proc.a, 0x49);
 
     // Zero page indexed
-    proc.pc = 0;
     proc.memory[0] = 0xb5; // LDA $20,X
     proc.memory[1] = 0x20;
     proc.memory[2] = 0;
     proc.x = 0x12;
     proc.memory[0x32] = 0x49;
+    proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ((uint8_t) proc.a, 0x49);
 
-   // Zero page indirect indexed
-    proc.pc = 0;
+    // Zero page indirect indexed
     proc.memory[0] = 0xb1; // LDA ($20), Y
     proc.memory[1] = 0x20;
     proc.memory[2] = 0;
@@ -114,6 +109,7 @@ void test_ld() {
     proc.memory[0x20] = 0x04;
     proc.memory[0x21] = 0x3;
     proc.memory[0x307] = 0xce;
+    proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ((uint8_t) proc.a, 0xce);
 
@@ -129,43 +125,93 @@ void test_ld() {
     run_emulator(&proc);
     TEST_EQ((uint8_t) proc.a, 0xf5);
 
-    // LDX
-    proc.memory[0] = 0xa2; // LDX #$4d
-    proc.memory[1] = 0x4d;
+    // LDX. Group 2.
+    proc.memory[0] = 0xa2; // LDX #$24
+    proc.memory[1] = 0x24;
     proc.pc = 0;
     run_emulator(&proc);
-    TEST_EQ(proc.x, 0x4d);
+    TEST_EQ(proc.x, 0x24);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
 
-    proc.memory[0] = 0xa6; // LDX $ce
-    proc.memory[1] = 0xce;
+    // Absolute
+    proc.memory[0] = 0xae; // LDX $100
+    proc.memory[1] = 0;
+    proc.memory[2] = 1;
+    proc.memory[256] = 0xa9;
     proc.pc = 0;
-    proc.memory[0xce] = 0x97;
     run_emulator(&proc);
-    TEST_EQ(proc.x, 0x97);
+    TEST_EQ((uint8_t) proc.x, 0xa9);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 1);
 
-    // LDY
-    proc.memory[0] = 0xa0; // LDX #$4d
-    proc.memory[1] = 0x4d;
+    // Zero page
+    proc.memory[0] = 0xa6; // LDX $20
+    proc.memory[1] = 0x20;
+    proc.memory[2] = 0;
+    proc.memory[0x20] = 0x52;
     proc.pc = 0;
     run_emulator(&proc);
-    TEST_EQ(proc.y, 0x4d);
+    TEST_EQ((uint8_t) proc.x, 0x52);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
 
-    proc.memory[0] = 0xa4; // LDX $ce
-    proc.memory[1] = 0xce;
+    // LDY. This is a group 3 instruction with a different
+    // encoding for addressing modes.
+    // Immediate
+    proc.memory[0] = 0xa0; // LDY #$24
+    proc.memory[1] = 0x24;
     proc.pc = 0;
-    proc.memory[0xce] = 0x97;
     run_emulator(&proc);
-    TEST_EQ(proc.y, 0x97);
+    TEST_EQ(proc.y, 0x24);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 0);
+
+    // Absolute
+    proc.memory[0] = 0xac; // LDY $100
+    proc.memory[1] = 0;
+    proc.memory[2] = 1;
+    proc.memory[256] = 0xa9;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.y, 0xa9);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 1);
+
+    // Zero page
+    proc.memory[0] = 0xa4; // LDY $20
+    proc.memory[1] = 0x20;
+    proc.memory[2] = 0;
+    proc.memory[0x20] = 0x52;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.y, 0x52);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 0);
+
+    // Absolute indexed
+    proc.memory[0] = 0xbc; // LDY $101,X
+    proc.memory[1] = 0x01;
+    proc.memory[2] = 0x01;
+    proc.x = 3;
+    proc.memory[0x104] = 0x8f;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.y, 0x8f);
+
+    // Zero page indexed
+    proc.memory[0] = 0xb4; // LDY $20,X
+    proc.memory[1] = 0x20;
+    proc.memory[2] = 0;
+    proc.x = 0x12;
+    proc.memory[0x32] = 0x49;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.y, 0x49);
 }
 
+// XXX I don't hit all of the addressing modes here, since this uses the same
+// code to resolve the address as the LD instructions above.
 void test_st() {
     struct m6502 proc;
     init_proc(&proc);
@@ -206,6 +252,8 @@ void test_st() {
     TEST_EQ(proc.memory[0x41], 0x45);
 }
 
+// XXX this also doesn't hit all addressing modes, as above.
+// It is more focused on proper flag handling behavior.
 void test_adc() {
     struct m6502 proc;
     init_proc(&proc);
@@ -285,6 +333,7 @@ void test_adc() {
     TEST_EQ(proc.v, 0);
 }
 
+// XXX SBC shares code with ADC, but inverts the second operand.
 void test_sbc() {
     struct m6502 proc;
     init_proc(&proc);
@@ -833,7 +882,7 @@ void test_set_clear_flags() {
     TEST_EQ(proc.v, 0);
 }
 
-// XXX comparisons should not look at carry-in
+// Ensure comparisons don't look at carry in.
 void test_compare() {
     struct m6502 proc;
     init_proc(&proc);

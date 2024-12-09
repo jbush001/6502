@@ -16,8 +16,6 @@
 
 import sys
 
-# https://llx.com/Neil/a2/opcodes.html
-
 table = [['IMPLIED', 'INVALID'] for _ in range(256)]
 
 def set_inst(fmt, field_index, field_value):
@@ -107,7 +105,7 @@ def main():
     # Group 2 instructions
     set_inst('???00010', 0, 'IMMEDIATE')
     set_inst('???00110', 0, 'ZERO_PAGE')
-    set_inst('???10110', 0, 'ACCUMULATOR')
+    set_inst('???10110', 0, 'IMPLIED')
     set_inst('???01110', 0, 'ABSOLUTE')
     set_inst('???10110', 0, 'ZERO_PAGE_X')
     set_inst('???11110', 0, 'ABSOLUTE_X')
