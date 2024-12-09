@@ -25,7 +25,7 @@ core-test: instructions.h core-test.c 6502-core.c
 	cc $(CFLAGS) core-test.c 6502-core.c -o core-test
 
 instructions.h: make_inst_tab.py
-	python3 make_inst_tab.py > instructions.h
+	python3 make_inst_tab.py
 
 clean:
 	rm instructions.h emulator core-test
