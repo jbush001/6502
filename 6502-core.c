@@ -465,62 +465,62 @@ void dump_regs(struct m6502 *proc) {
         proc->i, proc->z, proc->c);
 }
 
-void disassemble(struct m6502 *proc, uint16_t base_addr, int length) {
-    int offs = 0;
-    while (offs < length) {
-        int start_offs = offs;
-        uint8_t opcode = proc->memory[offs++];
+int disassemble(struct m6502 *proc, uint16_t base_addr, int length) {
+    uint16_t addr = base_addr;
+    while (addr < base_addr + length) {
+        int start_addr = addr;
+        uint8_t opcode = proc->memory[addr++];
         const struct instruction *inst = &INSTRUCTIONS[opcode];
         char operands[64];
         switch (inst->mode) {
             case ABSOLUTE:
                 snprintf(operands, sizeof(operands), "$%04x",
-                    proc->memory[offs] | (proc->memory[offs + 1] << 8));
-                offs += 2;
+                    proc->memory[addr] | (proc->memory[addr + 1] << 8));
+                addr += 2;
                 break;
             case ABSOLUTE_X:
                 snprintf(operands, sizeof(operands), "$%04x, X",
-                    proc->memory[offs] | (proc->memory[offs + 1] << 8));
-                offs += 2;
+                    proc->memory[addr] | (proc->memory[addr + 1] << 8));
+                addr += 2;
                 break;
             case ABSOLUTE_Y:
                 snprintf(operands, sizeof(operands), "$%04x, Y",
-                    proc->memory[offs] | (proc->memory[offs + 1] << 8));
-                offs += 2;
+                    proc->memory[addr] | (proc->memory[addr + 1] << 8));
+                addr += 2;
                 break;
             case IMPLIED:
                 strcpy(operands, "");
                 break;
             case IND_ZERO_PAGE_X:
                 snprintf(operands, sizeof(operands), "($%02x, X)",
-                    proc->memory[offs++]);
+                    proc->memory[addr++]);
                 break;
             case IND_ZERO_PAGE_Y:
                 snprintf(operands, sizeof(operands), "($%02x), Y",
-                    proc->memory[offs++]);
+                    proc->memory[addr++]);
                 break;
             case IMMEDIATE:
                 snprintf(operands, sizeof(operands), "#$%02x",
-                    proc->memory[offs++]);
+                    proc->memory[addr++]);
                 break;
             case ZERO_PAGE_X:
                 snprintf(operands, sizeof(operands), "$%02x, X",
-                    proc->memory[offs++]);
+                    proc->memory[addr++]);
                 break;
             case ZERO_PAGE:
                 snprintf(operands, sizeof(operands), "$%02x",
-                    proc->memory[offs++]);
+                    proc->memory[addr++]);
                 break;
             case INDIRECT:
                 snprintf(operands, sizeof(operands), "($%04x)",
-                    proc->memory[offs] | (proc->memory[offs + 1] << 8));
-                offs += 2;
+                    proc->memory[addr] | (proc->memory[addr + 1] << 8));
+                addr += 2;
                 break;
         }
 
         char line[128];
-        snprintf(line, sizeof(line), "%04x", base_addr + start_offs);
-        for (int i = start_offs; i < offs; i++) {
+        snprintf(line, sizeof(line), "%04x", start_addr);
+        for (int i = start_addr; i < addr; i++) {
             snprintf(line + strlen(line), sizeof(line) - strlen(line), " %02x",
                 proc->memory[i]);
         }
@@ -533,6 +533,8 @@ void disassemble(struct m6502 *proc, uint16_t base_addr, int length) {
             " %s %s", inst->mnemonic, operands);
         printf("%s\n", line);
     }
+
+    return addr - base_addr;
 }
 
 #define BYTES_PER_ROW 16

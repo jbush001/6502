@@ -39,18 +39,47 @@ struct debug_command {
 #define NUM_CMDS ((int) (sizeof(CMDS) / sizeof(struct debug_command)))
 
 static struct m6502 proc;
+static uint16_t next_disassemble_addr;
+static uint16_t next_dump_addr;
+
+int parse_number(const char *num) {
+    if (num[0] == '$') {
+        return strtol(num + 1, NULL, 16);
+    } else {
+        return strtol(num, NULL, 10);
+    }
+}
 
 void cmd_registers(int argc, const char *argv[]) {
     dump_regs(&proc);
 }
 
 void cmd_disassemble(int argc, const char *argv[]) {
-    if (argc != 3) {
-        printf("incorrect number of args\n");
-        return;
+    int disassemble_len = 16;
+    if (argc >= 2) {
+        next_disassemble_addr = parse_number(argv[1]);
     }
 
-    disassemble(&proc, atoi(argv[1]), atoi(argv[2]));
+    if (argc >= 3) {
+        disassemble_len = parse_number(argv[2]);
+    }
+
+    next_disassemble_addr += disassemble(&proc, next_disassemble_addr,
+        disassemble_len);
+}
+
+void cmd_dump_memory(int argc, const char *argv[]) {
+    int dump_len = 64;
+    if (argc >= 2) {
+        next_dump_addr = parse_number(argv[1]);
+    }
+
+    if (argc >= 3) {
+        dump_len = parse_number(argv[2]);
+    }
+
+    dump_memory(&proc, next_dump_addr, dump_len);
+    next_dump_addr += dump_len;
 }
 
 void cmd_run(int argc, const char *argv[]) {
@@ -64,15 +93,6 @@ void cmd_help(int argc, const char *argv[]) {
     for (int i = 0; i < NUM_CMDS; i++) {
         printf("%s\n", CMDS[i].name);
     }
-}
-
-void cmd_dump_memory(int argc, const char *argv[]) {
-    if (argc != 3) {
-        printf("incorrect number of args\n");
-        return;
-    }
-
-    dump_memory(&proc, atoi(argv[1]), atoi(argv[2]));
 }
 
 void load_program(const char *filename) {
@@ -92,6 +112,10 @@ void dispatch_command(char *command) {
     int argn;
 
     toks[0] = strtok(command, " ");
+    if (toks[0] == NULL) {
+        return;
+    }
+
     for (argn = 1; argn < MAX_ARGS; argn++) {
         toks[argn] = strtok(0, " ");
         if (!toks[argn]) {

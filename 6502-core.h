@@ -43,7 +43,7 @@ struct m6502 {
 
 void init_proc(struct m6502 *proc);
 void run_emulator(struct m6502 *proc);
-void disassemble(struct m6502 *proc, uint16_t base_addr, int length);
+int disassemble(struct m6502 *proc, uint16_t base_addr, int length);
 void dump_memory(struct m6502 *proc, uint16_t base_addr, int length);
 void dump_regs(struct m6502 *proc);
 
