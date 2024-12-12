@@ -24,6 +24,7 @@ void cmd_disassemble(int argc, const char *argv[]);
 void cmd_run(int argc, const char *argv[]);
 void cmd_help(int argc, const char *argv[]);
 void cmd_dump_memory(int argc, const char *argv[]);
+void cmd_set_memory(int argc, const char *argv[]);
 
 struct debug_command {
     const char *name;
@@ -34,7 +35,8 @@ struct debug_command {
     {"dis", "Disassemble code [start_addr] [length]", cmd_disassemble},
     {"run", "Run program [address]", cmd_run},
     {"help", "List available commands", cmd_help},
-    {"dm", "Dump memory [start addr] [length]", cmd_dump_memory}
+    {"dm", "Dump memory [start addr] [length]", cmd_dump_memory},
+    {"sm", "Set memory [start addr] [byte1] [byte2]...", cmd_set_memory},
 };
 
 #define NUM_CMDS ((int) (sizeof(CMDS) / sizeof(struct debug_command)))
@@ -81,6 +83,18 @@ void cmd_dump_memory(int argc, const char *argv[]) {
 
     dump_memory(&proc, next_dump_addr, dump_len);
     next_dump_addr += dump_len;
+}
+
+void cmd_set_memory(int argc, const char *argv[]) {
+    if (argc < 3) {
+        printf("Too few arguments\n");
+        return;
+    }
+
+    uint16_t base_addr = parse_number(argv[1]);
+    for (int i = 2; i < argc; i++) {
+        proc.memory[base_addr + i - 2] = parse_number(argv[i]) & 0xff;
+    }
 }
 
 void cmd_run(int argc, const char *argv[]) {
