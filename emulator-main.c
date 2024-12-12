@@ -27,13 +27,14 @@ void cmd_dump_memory(int argc, const char *argv[]);
 
 struct debug_command {
     const char *name;
+    const char *help;
     void (*handler)(int argc, const char *argv[]);
 } CMDS[] = {
-    {"regs", cmd_registers},
-    {"dis", cmd_disassemble},
-    {"run", cmd_run},
-    {"help", cmd_help},
-    {"dm", cmd_dump_memory}
+    {"regs", "Dump registers", cmd_registers},
+    {"dis", "Disassemble code [start_addr] [length]", cmd_disassemble},
+    {"run", "Run program [address]", cmd_run},
+    {"help", "List available commands", cmd_help},
+    {"dm", "Dump memory [start addr] [length]", cmd_dump_memory}
 };
 
 #define NUM_CMDS ((int) (sizeof(CMDS) / sizeof(struct debug_command)))
@@ -91,7 +92,7 @@ void cmd_run(int argc, const char *argv[]) {
 void cmd_help(int argc, const char *argv[]) {
     printf("commands:\n");
     for (int i = 0; i < NUM_CMDS; i++) {
-        printf("%s\n", CMDS[i].name);
+        printf("%10s   %s\n", CMDS[i].name, CMDS[i].help);
     }
 }
 
