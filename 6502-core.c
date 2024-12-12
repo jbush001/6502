@@ -465,26 +465,27 @@ void dump_regs(struct m6502 *proc) {
         proc->i, proc->z, proc->c);
 }
 
-void disassemble(uint16_t base_addr, uint8_t *memory, int length) {
+void disassemble(struct m6502 *proc, uint16_t base_addr, int length) {
     int offs = 0;
     while (offs < length) {
         int start_offs = offs;
-        uint8_t opcode = memory[offs++];
+        uint8_t opcode = proc->memory[offs++];
         const struct instruction *inst = &INSTRUCTIONS[opcode];
         char operands[64];
         switch (inst->mode) {
             case ABSOLUTE:
-                snprintf(operands, sizeof(operands), "$%04x", memory[offs] | (memory[offs + 1] << 8));
+                snprintf(operands, sizeof(operands), "$%04x",
+                    proc->memory[offs] | (proc->memory[offs + 1] << 8));
                 offs += 2;
                 break;
             case ABSOLUTE_X:
                 snprintf(operands, sizeof(operands), "$%04x, X",
-                    memory[offs] | (memory[offs + 1] << 8));
+                    proc->memory[offs] | (proc->memory[offs + 1] << 8));
                 offs += 2;
                 break;
             case ABSOLUTE_Y:
                 snprintf(operands, sizeof(operands), "$%04x, Y",
-                    memory[offs] | (memory[offs + 1] << 8));
+                    proc->memory[offs] | (proc->memory[offs + 1] << 8));
                 offs += 2;
                 break;
             case IMPLIED:
@@ -492,25 +493,27 @@ void disassemble(uint16_t base_addr, uint8_t *memory, int length) {
                 break;
             case IND_ZERO_PAGE_X:
                 snprintf(operands, sizeof(operands), "($%02x, X)",
-                    memory[offs++]);
+                    proc->memory[offs++]);
                 break;
             case IND_ZERO_PAGE_Y:
                 snprintf(operands, sizeof(operands), "($%02x), Y",
-                    memory[offs++]);
+                    proc->memory[offs++]);
                 break;
             case IMMEDIATE:
-                snprintf(operands, sizeof(operands), "#$%02x", memory[offs++]);
+                snprintf(operands, sizeof(operands), "#$%02x",
+                    proc->memory[offs++]);
                 break;
             case ZERO_PAGE_X:
                 snprintf(operands, sizeof(operands), "$%02x, X",
-                    memory[offs++]);
+                    proc->memory[offs++]);
                 break;
             case ZERO_PAGE:
-                snprintf(operands, sizeof(operands), "$%02x", memory[offs++]);
+                snprintf(operands, sizeof(operands), "$%02x",
+                    proc->memory[offs++]);
                 break;
             case INDIRECT:
                 snprintf(operands, sizeof(operands), "($%04x)",
-                    memory[offs] | (memory[offs + 1] << 8));
+                    proc->memory[offs] | (proc->memory[offs + 1] << 8));
                 offs += 2;
                 break;
         }
@@ -518,7 +521,8 @@ void disassemble(uint16_t base_addr, uint8_t *memory, int length) {
         char line[128];
         snprintf(line, sizeof(line), "%04x", base_addr + start_offs);
         for (int i = start_offs; i < offs; i++) {
-            snprintf(line + strlen(line), sizeof(line) - strlen(line), " %02x", memory[i]);
+            snprintf(line + strlen(line), sizeof(line) - strlen(line), " %02x",
+                proc->memory[i]);
         }
 
         while (strlen(line) < 20) {
@@ -528,6 +532,31 @@ void disassemble(uint16_t base_addr, uint8_t *memory, int length) {
         snprintf(line + strlen(line), sizeof(line) - strlen(line),
             " %s %s", inst->mnemonic, operands);
         printf("%s\n", line);
+    }
+}
+
+#define BYTES_PER_ROW 16
+
+void dump_memory(struct m6502 *proc, uint16_t base_addr, int length) {
+    int row_offset;
+
+    for (row_offset = 0; row_offset < length; row_offset += 16) {
+        printf("%04x ", base_addr + row_offset);
+        for (int i = 0; i < BYTES_PER_ROW; i++) {
+            printf("%02x ", proc->memory[base_addr + row_offset + i]);
+        }
+
+        printf("    ");
+        for (int i = 0; i < BYTES_PER_ROW; i++) {
+            uint8_t val = proc->memory[base_addr + row_offset + i];
+            if (val >= 32 && val <= 127) {
+                printf("%c", val);
+            } else {
+                printf(".");
+            }
+        }
+
+        printf("\n");
     }
 }
 

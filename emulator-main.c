@@ -14,11 +14,105 @@
 // limitations under the License.
 //
 
+#include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "6502-core.h"
 
+void cmd_registers(int argc, const char *argv[]);
+void cmd_disassemble(int argc, const char *argv[]);
+void cmd_run(int argc, const char *argv[]);
+void cmd_help(int argc, const char *argv[]);
+void cmd_dump_memory(int argc, const char *argv[]);
+
+struct debug_command {
+    const char *name;
+    void (*handler)(int argc, const char *argv[]);
+} CMDS[] = {
+    {"regs", cmd_registers},
+    {"dis", cmd_disassemble},
+    {"run", cmd_run},
+    {"help", cmd_help},
+    {"dm", cmd_dump_memory}
+};
+
+#define NUM_CMDS ((int) (sizeof(CMDS) / sizeof(struct debug_command)))
+
+static struct m6502 proc;
+
+void cmd_registers(int argc, const char *argv[]) {
+    dump_regs(&proc);
+}
+
+void cmd_disassemble(int argc, const char *argv[]) {
+    if (argc != 3) {
+        printf("incorrect number of args\n");
+        return;
+    }
+
+    disassemble(&proc, atoi(argv[1]), atoi(argv[2]));
+}
+
+void cmd_run(int argc, const char *argv[]) {
+    run_emulator(&proc);
+    printf("Halted\n");
+    dump_regs(&proc);
+}
+
+void cmd_help(int argc, const char *argv[]) {
+    printf("commands:\n");
+    for (int i = 0; i < NUM_CMDS; i++) {
+        printf("%s\n", CMDS[i].name);
+    }
+}
+
+void cmd_dump_memory(int argc, const char *argv[]) {
+    if (argc != 3) {
+        printf("incorrect number of args\n");
+        return;
+    }
+
+    dump_memory(&proc, atoi(argv[1]), atoi(argv[2]));
+}
+
+void load_program(const char *filename) {
+    FILE *file = fopen(filename, "rb");
+    if (!file) {
+        perror("error opening file");
+        exit(1);
+    }
+
+    fread(proc.memory, MEM_SIZE, 1, file);
+    fclose(file);
+}
+
+void dispatch_command(char *command) {
+    const int MAX_ARGS = 16;
+    const char *toks[MAX_ARGS];
+    int argn;
+
+    toks[0] = strtok(command, " ");
+    for (argn = 1; argn < MAX_ARGS; argn++) {
+        toks[argn] = strtok(0, " ");
+        if (!toks[argn]) {
+            break;
+        }
+    }
+
+    for (int i = 0; ; i++) {
+        if (i == NUM_CMDS) {
+            printf("unknown command %s\n", toks[0]);
+            break;
+        }
+
+        if (strcmp(toks[0], CMDS[i].name) == 0) {
+            CMDS[i].handler(argn, toks);
+            break;
+        }
+    }
+}
+
 int main(int argc, const char *argv[]) {
-    struct m6502 proc;
     init_proc(&proc);
 
     if (argc != 2) {
@@ -26,18 +120,18 @@ int main(int argc, const char *argv[]) {
         return 1;
     }
 
-    FILE *file = fopen(argv[1], "rb");
-    if (!file) {
-        perror("error opening file");
-        return 1;
+    load_program(argv[1]);
+
+    char command[128];
+    while (1) {
+        printf("* ");
+        if (!fgets(command, sizeof(command), stdin)) {
+            break;
+        }
+
+        command[strlen(command) - 1] = '\0'; // strip newline
+        dispatch_command(command);
     }
-
-    fread(proc.memory, MEM_SIZE, 1, file);
-    fclose(file);
-
-    disassemble(0, proc.memory, 16);
-    run_emulator(&proc);
-    dump_regs(&proc);
 
     return 0;
 }
