@@ -55,6 +55,9 @@ uint16_t get_operand_addr(struct m6502 *proc, enum address_mode mode) {
         case ZERO_PAGE_X: // $hh, X
             return read_mem_u8(proc, proc->pc++) + proc->x;
 
+        case ZERO_PAGE_Y: // $hh, Y
+            return read_mem_u8(proc, proc->pc++) + proc->y;
+
         case ABSOLUTE_X: { // $hhhh, X
             unsigned short addr = read_mem_u16(proc, proc->pc);
             proc->pc += 2;
@@ -93,7 +96,6 @@ void set_nz_flags(struct m6502 *proc, uint8_t value) {
 }
 
 void inst_INVALID(struct m6502 *proc, enum address_mode mode) {
-    printf("invalid instruction at $%04x\n", proc->pc - 1);
     proc->halt = 1;
 }
 
@@ -505,6 +507,10 @@ int disassemble(struct m6502 *proc, uint16_t base_addr, int length) {
                 break;
             case ZERO_PAGE_X:
                 snprintf(operands, sizeof(operands), "$%02x, X",
+                    proc->memory[addr++]);
+                break;
+            case ZERO_PAGE_Y:
+                snprintf(operands, sizeof(operands), "$%02x, Y",
                     proc->memory[addr++]);
                 break;
             case ZERO_PAGE:

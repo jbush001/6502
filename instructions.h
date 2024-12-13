@@ -13,6 +13,7 @@ enum address_mode {
     IND_ZERO_PAGE_Y,
     ZERO_PAGE,
     ZERO_PAGE_X,
+    ZERO_PAGE_Y,
 };
 
 void inst_ADC(struct m6502*, enum address_mode);
@@ -230,7 +231,7 @@ const struct instruction INSTRUCTIONS[] = {
     { IMPLIED, inst_INVALID, "???" },
     { ZERO_PAGE_X, inst_STY, "STY" },
     { ZERO_PAGE_X, inst_STA, "STA" },
-    { ZERO_PAGE_X, inst_STX, "STX" },
+    { ZERO_PAGE_Y, inst_STX, "STX" },
     { IMPLIED, inst_INVALID, "???" },
     { IMPLIED, inst_TYA, "TYA" },
     { ABSOLUTE_Y, inst_STA, "STA" },
@@ -238,7 +239,7 @@ const struct instruction INSTRUCTIONS[] = {
     { IMPLIED, inst_INVALID, "???" },
     { ABSOLUTE_X, inst_STY, "STY" },
     { ABSOLUTE_X, inst_STA, "STA" },
-    { ABSOLUTE_X, inst_STX, "STX" },
+    { ABSOLUTE_Y, inst_STX, "STX" },
     { IMPLIED, inst_INVALID, "???" },
     { IMMEDIATE, inst_LDY, "LDY" },     // 0xa0
     { IND_ZERO_PAGE_X, inst_LDA, "LDA" },
@@ -262,7 +263,7 @@ const struct instruction INSTRUCTIONS[] = {
     { IMPLIED, inst_INVALID, "???" },
     { ZERO_PAGE_X, inst_LDY, "LDY" },
     { ZERO_PAGE_X, inst_LDA, "LDA" },
-    { ZERO_PAGE_X, inst_LDX, "LDX" },
+    { ZERO_PAGE_Y, inst_LDX, "LDX" },
     { IMPLIED, inst_INVALID, "???" },
     { IMPLIED, inst_CLV, "CLV" },
     { ABSOLUTE_Y, inst_LDA, "LDA" },
@@ -270,7 +271,7 @@ const struct instruction INSTRUCTIONS[] = {
     { IMPLIED, inst_INVALID, "???" },
     { ABSOLUTE_X, inst_LDY, "LDY" },
     { ABSOLUTE_X, inst_LDA, "LDA" },
-    { ABSOLUTE_X, inst_LDX, "LDX" },
+    { ABSOLUTE_Y, inst_LDX, "LDX" },
     { IMPLIED, inst_INVALID, "???" },
     { IMMEDIATE, inst_CPY, "CPY" },     // 0xc0
     { IND_ZERO_PAGE_X, inst_CMP, "CMP" },

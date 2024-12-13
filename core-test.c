@@ -72,11 +72,11 @@ void test_ld() {
     TEST_EQ(proc.n, 0);
 
     // Absolute indexed
-    proc.memory[0] = 0xbd; // LDA $01,X
-    proc.memory[1] = 0x01;
+    proc.memory[0] = 0xbd; // LDA $102,X
+    proc.memory[1] = 0x02;
     proc.memory[2] = 0x01;
     proc.x = 3;
-    proc.memory[0x104] = 0x8f;
+    proc.memory[0x105] = 0x8f;
     proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ((uint8_t) proc.a, 0x8f);
@@ -126,6 +126,7 @@ void test_ld() {
     TEST_EQ((uint8_t) proc.a, 0xf5);
 
     // LDX. Group 2.
+    // Immediate
     proc.memory[0] = 0xa2; // LDX #$24
     proc.memory[1] = 0x24;
     proc.pc = 0;
@@ -155,6 +156,31 @@ void test_ld() {
     TEST_EQ((uint8_t) proc.x, 0x52);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
+
+    // Zero Page, Y
+    proc.memory[0] = 0xb6; // LDX $60,Y
+    proc.memory[1] = 0x60;
+    proc.memory[2] = 0;
+    proc.y = 0xa;
+    proc.memory[0x6a] = 0x71;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.x, 0x71);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 0);
+
+    // Absolute, Y
+    proc.memory[0] = 0xbe; // LDX $383,Y
+    proc.memory[1] = 0x83;
+    proc.memory[2] = 0x03;
+    proc.memory[3] = 0;
+    proc.y = 0x4;
+    proc.memory[0x387] = 0x96;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.x, 0x96);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 1);
 
     // LDY. This is a group 3 instruction with a different
     // encoding for addressing modes.
@@ -210,8 +236,6 @@ void test_ld() {
     TEST_EQ((uint8_t) proc.y, 0x49);
 }
 
-// XXX I don't hit all of the addressing modes here, since this uses the same
-// code to resolve the address as the LD instructions above.
 void test_st() {
     struct m6502 proc;
     init_proc(&proc);
@@ -233,14 +257,94 @@ void test_st() {
     run_emulator(&proc);
     TEST_EQ(proc.memory[0x21], 0xef);
 
+    // Absolute indexed
+    proc.memory[0] = 0x9d; // STA $102,X
+    proc.memory[1] = 0x02;
+    proc.memory[2] = 0x01;
+    proc.x = 3;
+    proc.a = 0x95;
+    proc.memory[0x105] = 0;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.memory[0x105], 0x95);
+
+    // Absolute indexed
+    proc.memory[0] = 0x99; // SDA $201,Y
+    proc.memory[1] = 0x01;
+    proc.memory[2] = 0x02;
+    proc.y = 7;
+    proc.a = 0x49;
+    proc.memory[0x208] = 0;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.memory[0x208], 0x49);
+
+    // Zero page indexed
+    proc.memory[0] = 0x95; // STA $20,X
+    proc.memory[1] = 0x20;
+    proc.memory[2] = 0;
+    proc.a = 0x49;
+    proc.x = 0x12;
+    proc.memory[0x32] = 0;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.memory[0x32], 0x49);
+
+    // Zero page indirect indexed
+    proc.memory[0] = 0x91; // STA ($20),Y
+    proc.memory[1] = 0x20;
+    proc.memory[2] = 0;
+    proc.y = 0x5;
+    proc.memory[0x20] = 0x04;
+    proc.memory[0x21] = 0x3;
+    proc.memory[0x309] = 0;
+    proc.a = 0x97;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.memory[0x309], 0x97);
+
+    // Zero page indexed indirect
+    proc.memory[0] = 0x81; // STA ($13,X)
+    proc.memory[1] = 0x13;
+    proc.memory[2] = 0;
+    proc.x = 0x25;
+    proc.memory[0x38] = 0x31;
+    proc.memory[0x39] = 0x4;
+    proc.a = 0xf5;
+    proc.memory[0x431] = 0;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.memory[0x431], 0xf5);
+
     // STX
+    // Absolute
+    proc.memory[0] = 0x8e; // STX $120
+    proc.memory[1] = 0x20;
+    proc.memory[2] = 0x01;
+    proc.memory[3] = 0x00;
     proc.x = 0x22;
-    proc.memory[0] = 0x86; // STX $120
-    proc.memory[1] = 0x40;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.memory[0x120], 0x22);
+
+    // Zero page
+    proc.x = 0x44;
+    proc.memory[0] = 0x86; // STX $37
+    proc.memory[1] = 0x37;
     proc.memory[2] = 0x00;
     proc.pc = 0;
     run_emulator(&proc);
-    TEST_EQ(proc.memory[0x40], 0x22);
+    TEST_EQ(proc.memory[0x37], 0x44);
+
+    // Zero page, Y
+    proc.memory[0] = 0x96; // STX $43,Y
+    proc.memory[1] = 0x43;
+    proc.memory[2] = 0x00;
+    proc.x = 0x55;
+    proc.y = 0x2;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.memory[0x45], 0x55);
 
     // STY
     proc.y = 0x45;
@@ -252,7 +356,8 @@ void test_st() {
     TEST_EQ(proc.memory[0x41], 0x45);
 }
 
-// XXX this also doesn't hit all addressing modes, as above.
+// XXX This doesn't hit all addressing modes, since decoding code is
+// shared in the emulator.
 // It is more focused on proper flag handling behavior.
 void test_adc() {
     struct m6502 proc;

@@ -123,6 +123,12 @@ def main():
     inst_encoding('110???10', MNENONIC, 'DEC')
     inst_encoding('111???10', MNENONIC, 'INC')
 
+    # Special cases: with STX and LDX, x index instructions become Y indexed
+    inst_encoding('10010110', ADDR_MODE, 'ZERO_PAGE_Y') # STX
+    inst_encoding('10011110', ADDR_MODE, 'ABSOLUTE_Y')
+    inst_encoding('10110110', ADDR_MODE, 'ZERO_PAGE_Y') # LDX
+    inst_encoding('10111110', ADDR_MODE, 'ABSOLUTE_Y')
+
     # Group 3 instructions
     inst_encoding('???00000', ADDR_MODE, 'IMMEDIATE')
     inst_encoding('???00100', ADDR_MODE, 'ZERO_PAGE')
