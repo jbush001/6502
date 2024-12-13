@@ -14,15 +14,15 @@
 // limitations under the License.
 //
 
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "6502-core.h"
 
+void cmd_help(int argc, const char *argv[]);
 void cmd_registers(int argc, const char *argv[]);
 void cmd_disassemble(int argc, const char *argv[]);
 void cmd_run(int argc, const char *argv[]);
-void cmd_help(int argc, const char *argv[]);
 void cmd_dump_memory(int argc, const char *argv[]);
 void cmd_set_memory(int argc, const char *argv[]);
 
@@ -31,10 +31,10 @@ struct debug_command {
     const char *help;
     void (*handler)(int argc, const char *argv[]);
 } CMDS[] = {
+    {"help", "List available commands", cmd_help},
     {"regs", "Dump registers", cmd_registers},
     {"dis", "Disassemble code [start_addr] [length]", cmd_disassemble},
     {"run", "Run program [address]", cmd_run},
-    {"help", "List available commands", cmd_help},
     {"dm", "Dump memory [start addr] [length]", cmd_dump_memory},
     {"sm", "Set memory [start addr] [byte1] [byte2]...", cmd_set_memory},
 };
@@ -123,29 +123,29 @@ void load_program(const char *filename) {
 
 void dispatch_command(char *command) {
     const int MAX_ARGS = 16;
-    const char *toks[MAX_ARGS];
-    int argn;
+    const char *argv[MAX_ARGS];
+    int argc;
 
-    toks[0] = strtok(command, " ");
-    if (toks[0] == NULL) {
+    argv[0] = strtok(command, " ");
+    if (argv[0] == NULL) {
         return;
     }
 
-    for (argn = 1; argn < MAX_ARGS; argn++) {
-        toks[argn] = strtok(0, " ");
-        if (!toks[argn]) {
+    for (argc = 1; argc < MAX_ARGS; argc++) {
+        argv[argc] = strtok(0, " ");
+        if (!argv[argc]) {
             break;
         }
     }
 
     for (int i = 0; ; i++) {
         if (i == NUM_CMDS) {
-            printf("unknown command %s\n", toks[0]);
+            printf("unknown command %s\n", argv[0]);
             break;
         }
 
-        if (strcmp(toks[0], CMDS[i].name) == 0) {
-            CMDS[i].handler(argn, toks);
+        if (strcmp(argv[0], CMDS[i].name) == 0) {
+            CMDS[i].handler(argc, argv);
             break;
         }
     }
@@ -161,9 +161,9 @@ int main(int argc, const char *argv[]) {
 
     load_program(argv[1]);
 
-    char command[128];
     while (1) {
         printf("* ");
+        char command[128];
         if (!fgets(command, sizeof(command), stdin)) {
             break;
         }

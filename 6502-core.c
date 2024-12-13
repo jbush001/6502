@@ -542,9 +542,7 @@ int disassemble(struct m6502 *proc, uint16_t base_addr, int length) {
 #define BYTES_PER_ROW 16
 
 void dump_memory(struct m6502 *proc, uint16_t base_addr, int length) {
-    int row_offset;
-
-    for (row_offset = 0; row_offset < length; row_offset += 16) {
+    for (int row_offset = 0; row_offset < length; row_offset += 16) {
         printf("%04x ", base_addr + row_offset);
         for (int i = 0; i < BYTES_PER_ROW; i++) {
             printf("%02x ", proc->memory[base_addr + row_offset + i]);
