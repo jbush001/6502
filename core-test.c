@@ -425,16 +425,31 @@ void test_adc() {
     TEST_EQ(proc.v, 1);
 
     // Zero result
-    proc.pc = 0;
     proc.memory[0] = 0x69; // ADC #-23
     proc.memory[1] = 233;
     proc.a = 23;
     proc.c = 0;
+    proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ((uint8_t) proc.a, 0);
     TEST_EQ(proc.z, 1);
     TEST_EQ(proc.n, 0);
     TEST_EQ(proc.c, 1);
+    TEST_EQ(proc.v, 0);
+
+    // Zero page
+    proc.memory[0] = 0x65; // ADC $23
+    proc.memory[1] = 0x23;
+    proc.memory[2] = 0;
+    proc.memory[0x23] = 0x64;
+    proc.a = 0x12;
+    proc.c = 1;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.a, 0x77);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 0);
+    TEST_EQ(proc.c, 0);
     TEST_EQ(proc.v, 0);
 }
 
@@ -443,15 +458,32 @@ void test_sbc() {
     struct m6502 proc;
     init_proc(&proc);
 
-    // No overflow, no carry out or in
+    // No overflow, no borrow out or in
     proc.memory[0] = 0xe9; // SBC #$13
     proc.memory[1] = 0x13;
+    proc.memory[2] = 0;
     proc.a = 0x27;
+    proc.c = 1;
     run_emulator(&proc);
     TEST_EQ(proc.a, 0x14);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
     TEST_EQ(proc.c, 1); // Borrow is reversed vs. adc
+    TEST_EQ(proc.v, 0);
+
+    // Zero page
+    proc.memory[0] = 0xe5; // SBC $33
+    proc.memory[1] = 0x33;
+    proc.memory[2] = 0;
+    proc.memory[0x33] = 0x8;
+    proc.a = 0x12;
+    proc.c = 1;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ((uint8_t) proc.a, 0xa); // XXX this may be wrong given carry is zero
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.n, 0);
+    TEST_EQ(proc.c, 1);
     TEST_EQ(proc.v, 0);
 }
 

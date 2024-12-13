@@ -158,10 +158,6 @@ void inst_BIT(struct m6502 *proc, enum address_mode mode) {
     assert(0); // Not implemented
 }
 
-uint8_t negate(uint8_t val) {
-    return (val ^ 0xff) + 1;
-}
-
 uint8_t add(struct m6502 *proc, uint8_t op1, uint8_t op2) {
     uint16_t uresult = op1 + op2 + proc->c;
     set_nz_flags(proc, uresult);
@@ -184,18 +180,18 @@ uint8_t add(struct m6502 *proc, uint8_t op1, uint8_t op2) {
 }
 
 void inst_CMP(struct m6502 *proc, enum address_mode mode) {
-    proc->c = 0;
-    add(proc, proc->a, negate(get_operand_value(proc, mode)));
+    proc->c = 1;
+    add(proc, proc->a, get_operand_value(proc, mode) ^ 0xff);
 }
 
 void inst_CPX(struct m6502 *proc, enum address_mode mode) {
-    proc->c = 0;
-    add(proc, proc->x, negate(get_operand_value(proc, mode)));
+    proc->c = 1;
+    add(proc, proc->x, get_operand_value(proc, mode) ^ 0xff);
 }
 
 void inst_CPY(struct m6502 *proc, enum address_mode mode) {
-    proc->c = 0;
-    add(proc, proc->y, negate(get_operand_value(proc, mode)));
+    proc->c = 1;
+    add(proc, proc->y, get_operand_value(proc, mode) ^ 0xff);
 }
 
 void inst_ADC(struct m6502 *proc, enum address_mode mode) {
@@ -203,7 +199,7 @@ void inst_ADC(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_SBC(struct m6502 *proc, enum address_mode mode) {
-    proc->a = add(proc, proc->a, negate(get_operand_value(proc, mode)));
+    proc->a = add(proc, proc->a, get_operand_value(proc, mode) ^ 0xff);
 }
 
 void inst_INC(struct m6502 *proc, enum address_mode mode) {
