@@ -20,18 +20,19 @@ all: emulator program.bin instruction-test
 
 test: instruction-test
 	./instruction-test
+	gcov instruction-test-6502-core.c
 
 emulator: instructions.h emulator-main.c 6502-core.c
 	cc $(CFLAGS) emulator-main.c 6502-core.c -o emulator
 
 instruction-test: instructions.h instruction-test.c 6502-core.c
-	cc $(CFLAGS) instruction-test.c 6502-core.c -o instruction-test
+	cc $(CFLAGS) -fprofile-arcs -ftest-coverage instruction-test.c 6502-core.c -o instruction-test
 
 instructions.h: make_inst_tab.py
 	python3 make_inst_tab.py
 
 clean:
-	rm instructions.h emulator core-test
+	rm -r instructions.h emulator instruction-test *.gcno *.bin *.lst
 
 program.bin: program.asm
 	dasm program.asm -f3 -lprogram.lst -oprogram.bin

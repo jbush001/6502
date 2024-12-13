@@ -1,6 +1,8 @@
-.vscode
 *.bin
 *.lst
+*.gcda
+*.gcno
+*.gcov
 emulator
+.vscode
 instruction-test
-
