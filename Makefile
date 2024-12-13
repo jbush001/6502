@@ -16,13 +16,16 @@
 
 CFLAGS=-W -Wall -Wno-unused-parameter -g
 
-all: emulator program.bin core-test
+all: emulator program.bin instruction-test
+
+test: instruction-test
+	./instruction-test
 
 emulator: instructions.h emulator-main.c 6502-core.c
 	cc $(CFLAGS) emulator-main.c 6502-core.c -o emulator
 
-core-test: instructions.h core-test.c 6502-core.c
-	cc $(CFLAGS) core-test.c 6502-core.c -o core-test
+instruction-test: instructions.h instruction-test.c 6502-core.c
+	cc $(CFLAGS) instruction-test.c 6502-core.c -o instruction-test
 
 instructions.h: make_inst_tab.py
 	python3 make_inst_tab.py
