@@ -26,15 +26,8 @@ void test_ld() {
     struct m6502 proc;
     init_proc(&proc);
 
-    // Immediate
-    proc.memory[0] = 0xa9; // LDA #$24
-    proc.memory[1] = 0x24;
-    run_emulator(&proc);
-    TEST_EQ(proc.a, 0x24);
-    TEST_EQ(proc.z, 0);
-    TEST_EQ(proc.n, 0);
-
     // Test N flag
+    proc.memory[0] = 0xa9; // LDA #$c5
     proc.memory[1] = 0xc5;
     proc.pc = 0;
     run_emulator(&proc);
@@ -43,11 +36,21 @@ void test_ld() {
     TEST_EQ(proc.n, 1);
 
     // Test Z flag
+    proc.memory[0] = 0xa9; // LDA #0
     proc.memory[1] = 0;
     proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ((uint8_t) proc.a, 0);
     TEST_EQ(proc.z, 1);
+    TEST_EQ(proc.n, 0);
+
+    // Immediate addressing mode
+    proc.memory[0] = 0xa9; // LDA #$24
+    proc.memory[1] = 0x24;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.a, 0x24);
+    TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
 
     // Absolute
@@ -347,6 +350,7 @@ void test_st() {
     TEST_EQ(proc.memory[0x45], 0x55);
 
     // STY
+    // Absolute
     proc.y = 0x45;
     proc.memory[0] = 0x84; // STY $120
     proc.memory[1] = 0x41;
@@ -354,11 +358,27 @@ void test_st() {
     proc.pc = 0;
     run_emulator(&proc);
     TEST_EQ(proc.memory[0x41], 0x45);
+
+    // Zero page
+    proc.y = 0xc3;
+    proc.memory[0] = 0x84; // STX $81
+    proc.memory[1] = 0x81;
+    proc.memory[2] = 0x00;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.memory[0x81], 0xc3);
+
+    // Zero page, X
+    proc.y = 0x1d;
+    proc.memory[0] = 0x94; // STX $81
+    proc.memory[1] = 0x81;
+    proc.memory[2] = 0x00;
+    proc.x = 0x7;
+    proc.pc = 0;
+    run_emulator(&proc);
+    TEST_EQ(proc.memory[0x88], 0x1d);
 }
 
-// XXX This doesn't hit all addressing modes, since decoding code is
-// shared in the emulator.
-// It is more focused on proper flag handling behavior.
 void test_adc() {
     struct m6502 proc;
     init_proc(&proc);
@@ -453,7 +473,6 @@ void test_adc() {
     TEST_EQ(proc.v, 0);
 }
 
-// XXX SBC shares code with ADC, but inverts the second operand.
 void test_sbc() {
     struct m6502 proc;
     init_proc(&proc);
