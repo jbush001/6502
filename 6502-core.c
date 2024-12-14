@@ -159,7 +159,10 @@ void inst_AND(struct m6502 *proc, enum address_mode mode) {
 }
 
 void inst_BIT(struct m6502 *proc, enum address_mode mode) {
-    assert(0); // Not implemented
+    uint8_t m = get_operand_value(proc, mode);
+    proc->n = (m >> 7) & 1;
+    proc->v = (m >> 6) & 1;
+    proc->z = (m & proc->a) == 0;
 }
 
 uint8_t add(struct m6502 *proc, uint8_t op1, uint8_t op2) {

@@ -1104,6 +1104,93 @@ void test_compare() {
     TEST_EQ(proc.y, 0x78);
 }
 
+// z = (A & M) != 0
+// n = M[7]
+// v = M[6]
+void test_bit() {
+    struct m6502 proc;
+    init_proc(&proc);
+
+    // N = 1
+    proc.memory[0] = 0x24; // BIT $20
+    proc.memory[1] = 0x20;
+    proc.memory[2] = 0;
+    proc.memory[0x20] = 0x80;
+    proc.a = 0;
+    proc.pc = 0;
+    proc.n = 0;
+    run_emulator(&proc, 0);
+    TEST_EQ(proc.n, 1);
+
+    // N = 0
+    proc.memory[0] = 0x24; // BIT $20
+    proc.memory[1] = 0x20;
+    proc.memory[2] = 0;
+    proc.memory[0x20] = 0x7f;
+    proc.a = 0;
+    proc.pc = 0;
+    proc.n = 1;
+    run_emulator(&proc, 0);
+    TEST_EQ(proc.n, 0);
+
+    // V = 1
+    proc.memory[0] = 0x24; // BIT $20
+    proc.memory[1] = 0x20;
+    proc.memory[2] = 0;
+    proc.memory[0x20] = 0x40;
+    proc.a = 0;
+    proc.pc = 0;
+    proc.v = 0;
+    run_emulator(&proc, 0);
+    TEST_EQ(proc.v, 1);
+
+    // V = 0
+    proc.memory[0] = 0x24; // BIT $20
+    proc.memory[1] = 0x20;
+    proc.memory[2] = 0;
+    proc.memory[0x20] = 0xbf;
+    proc.a = 0;
+    proc.pc = 0;
+    proc.v = 1;
+    run_emulator(&proc, 0);
+    TEST_EQ(proc.v, 0);
+
+    // Z = 1
+    proc.memory[0] = 0x24; // BIT $20
+    proc.memory[1] = 0x20;
+    proc.memory[2] = 0;
+    proc.memory[0x20] = 0xa5;
+    proc.a = 0x5a;
+    proc.pc = 0;
+    proc.z = 0;
+    run_emulator(&proc, 0);
+    TEST_EQ(proc.z, 1);
+
+    // Z = 0
+    proc.memory[0] = 0x24; // BIT $20
+    proc.memory[1] = 0x20;
+    proc.memory[2] = 0;
+    proc.memory[0x20] = 0xa7;
+    proc.a = 0x5a;
+    proc.pc = 0;
+    proc.z = 1;
+    run_emulator(&proc, 0);
+    TEST_EQ(proc.z, 0);
+
+    // Absolute
+    proc.memory[0] = 0x2c; // BIT $120
+    proc.memory[1] = 0x20;
+    proc.memory[2] = 1;
+    proc.memory[3] = 0; // BRK
+    proc.memory[0x120] = 0xe5;
+    proc.a = 0x76;
+    proc.pc = 0;
+    run_emulator(&proc, 0);
+    TEST_EQ(proc.n, 1);
+    TEST_EQ(proc.z, 0);
+    TEST_EQ(proc.v, 1);
+}
+
 int main() {
     test_ld();
     test_st();
@@ -1118,6 +1205,7 @@ int main() {
     test_inc_dec();
     test_set_clear_flags();
     test_compare();
+    test_bit();
 
     printf("PASS\n");
     return 0;
