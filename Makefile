@@ -18,7 +18,7 @@ CFLAGS=-W -Wall -Wno-unused-parameter -g
 
 all: emulator instruction-test
 
-test: instruction-test
+test: instruction-test emulator
 	./instruction-test
 	gcov instruction-test-6502-core.c
 	python3 run-test.py test-*.asm
