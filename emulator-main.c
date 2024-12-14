@@ -98,6 +98,10 @@ void cmd_set_memory(int argc, const char *argv[]) {
 }
 
 void cmd_run(int argc, const char *argv[]) {
+    if (argc >= 2) {
+        proc.pc = parse_number(argv[1]);
+    }
+
     run_emulator(&proc);
     printf("Halted\n");
     dump_regs(&proc);

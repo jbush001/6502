@@ -2,8 +2,9 @@
 
                     seg code
                     org $0000
-reset               stx $ce
-                    sty $ce
+reset               lda #01
+                    brk
+                    lda #99
                     brk
                     seg variables
                     org 100
