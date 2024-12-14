@@ -155,38 +155,39 @@ def main():
         (0xb0, 'BCS'),
         (0xd0, 'BNE'),
         (0xf0, 'BEQ'),
-        (0x00, 'BRK'),
     ]
 
     for opcode, mnemonic in branches:
         table[opcode] = ['RELATIVE',  mnemonic]
 
+    table[0x20] = ['ABSOLUTE', 'JSR']
+
     # Implied instructions
     implied = [
-        (0x20, 'JSR'),
+        (0x00, 'BRK'),
         (0x40, 'RTI'),
         (0x60, 'RTS'),
         (0x08, 'PHP'),
         (0x28, 'PLP'),
         (0x48, 'PHA'),
         (0x68, 'PLA'),
-        (0x88, 'DEY'),
-        (0xa8, 'TAY'),
-        (0xc8, 'INY'),
         (0xe8, 'INX'),
-        (0x18, 'CLC'),
-        (0x38, 'SEC'),
-        (0x58, 'CLI'),
-        (0x78, 'SEI'),
-        (0x98, 'TYA'),
+        (0xc8, 'INY'),
         (0xb8, 'CLV'),
-        (0xd8, 'CLD'),
         (0xf8, 'SED'),
+        (0xd8, 'CLD'),
+        (0x38, 'SEC'),
+        (0x18, 'CLC'),
+        (0x78, 'SEI'),
+        (0x58, 'CLI'),
+        (0x98, 'TYA'),
+        (0xa8, 'TAY'),
         (0x8a, 'TXA'),
-        (0x9a, 'TXS'),
         (0xaa, 'TAX'),
         (0xba, 'TSX'),
+        (0x9a, 'TXS'),
         (0xca, 'DEX'),
+        (0x88, 'DEY'),
         (0xea, 'NOP')
     ]
 

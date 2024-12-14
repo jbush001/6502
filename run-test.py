@@ -34,12 +34,10 @@ def run_test(filename):
             check_offs = line.find(check_prefix)
             if check_offs != -1:
                 check_pattern = line[check_offs + len(check_prefix) + 1:].strip()
-                print('search for pattern', check_pattern)
                 got = output.find(check_pattern, search_offset)
                 if got == -1:
                     raise Exception('could not find check pattern ' + check_pattern)
 
-                print('found at ', got)
                 search_offset = got + len(check_pattern)
 
 

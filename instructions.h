@@ -82,7 +82,7 @@ struct instruction {
 };
 
 const struct instruction INSTRUCTIONS[] = {
-    { RELATIVE, inst_BRK, "BRK" },      // 0x0
+    { IMPLIED, inst_BRK, "BRK" },       // 0x0
     { IND_ZERO_PAGE_X, inst_ORA, "ORA" },
     { IMMEDIATE, inst_ASL, "ASL" },
     { IMPLIED, inst_INVALID, "???" },
@@ -114,7 +114,7 @@ const struct instruction INSTRUCTIONS[] = {
     { ABSOLUTE_X, inst_ORA, "ORA" },
     { ABSOLUTE_X, inst_ASL, "ASL" },
     { IMPLIED, inst_INVALID, "???" },
-    { IMPLIED, inst_JSR, "JSR" },       // 0x20
+    { ABSOLUTE, inst_JSR, "JSR" },      // 0x20
     { IND_ZERO_PAGE_X, inst_AND, "AND" },
     { IMMEDIATE, inst_ROL, "ROL" },
     { IMPLIED, inst_INVALID, "???" },
