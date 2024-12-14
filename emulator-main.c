@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "6502-core.h"
 
 void cmd_help(int argc, const char *argv[]);
@@ -25,6 +26,7 @@ void cmd_disassemble(int argc, const char *argv[]);
 void cmd_run(int argc, const char *argv[]);
 void cmd_dump_memory(int argc, const char *argv[]);
 void cmd_set_memory(int argc, const char *argv[]);
+void cmd_step(int argc, const char *argv[]);
 
 struct debug_command {
     const char *name;
@@ -37,6 +39,7 @@ struct debug_command {
     {"run", "Run program [address]", cmd_run},
     {"dm", "Dump memory [start addr] [length]", cmd_dump_memory},
     {"sm", "Set memory [start addr] [byte1] [byte2]...", cmd_set_memory},
+    {"s", "Single step", cmd_step}
 };
 
 #define NUM_CMDS ((int) (sizeof(CMDS) / sizeof(struct debug_command)))
@@ -102,7 +105,7 @@ void cmd_run(int argc, const char *argv[]) {
         proc.pc = parse_number(argv[1]);
     }
 
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     printf("Halted\n");
     dump_regs(&proc);
 }
@@ -112,6 +115,10 @@ void cmd_help(int argc, const char *argv[]) {
     for (int i = 0; i < NUM_CMDS; i++) {
         printf("%10s   %s\n", CMDS[i].name, CMDS[i].help);
     }
+}
+
+void cmd_step(int argc, const char *argv[]) {
+    run_emulator(&proc, 1);
 }
 
 void load_program(const char *filename) {
@@ -155,16 +162,7 @@ void dispatch_command(char *command) {
     }
 }
 
-int main(int argc, const char *argv[]) {
-    init_proc(&proc);
-
-    if (argc != 2) {
-        printf("enter filename\n");
-        return 1;
-    }
-
-    load_program(argv[1]);
-
+void monitor_loop() {
     while (1) {
         printf("* ");
         char command[128];
@@ -174,6 +172,36 @@ int main(int argc, const char *argv[]) {
 
         command[strlen(command) - 1] = '\0'; // strip newline
         dispatch_command(command);
+    }
+}
+
+int main(int argc, char *argv[]) {
+    int opt;
+    int debug = 0;
+
+    while ((opt = getopt(argc, argv, "d")) != -1) {
+        switch (opt) {
+            case 'd':
+                debug = 1;
+                break;
+            default: /* '?' */
+                fprintf(stderr, "Usage: %s [-d] <binary file>\n",
+                        argv[0]);
+                exit(1);
+        }
+    }
+
+    if (optind >= argc) {
+        printf("Missing binary filename\n");
+        exit(1);
+    }
+
+    init_proc(&proc);
+    load_program(argv[optind]);
+    if (debug) {
+        monitor_loop();
+    } else {
+        run_emulator(&proc, 0);
     }
 
     return 0;

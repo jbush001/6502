@@ -11,6 +11,7 @@ enum address_mode {
     INDIRECT,
     IND_ZERO_PAGE_X,
     IND_ZERO_PAGE_Y,
+    RELATIVE,
     ZERO_PAGE,
     ZERO_PAGE_X,
     ZERO_PAGE_Y,
@@ -81,7 +82,7 @@ struct instruction {
 };
 
 const struct instruction INSTRUCTIONS[] = {
-    { IMPLIED, inst_BRK, "BRK" },       // 0x0
+    { RELATIVE, inst_BRK, "BRK" },      // 0x0
     { IND_ZERO_PAGE_X, inst_ORA, "ORA" },
     { IMMEDIATE, inst_ASL, "ASL" },
     { IMPLIED, inst_INVALID, "???" },
@@ -97,7 +98,7 @@ const struct instruction INSTRUCTIONS[] = {
     { ABSOLUTE, inst_ORA, "ORA" },
     { ABSOLUTE, inst_ASL, "ASL" },
     { IMPLIED, inst_INVALID, "???" },
-    { IMPLIED, inst_BPL, "BPL" },       // 0x10
+    { RELATIVE, inst_BPL, "BPL" },      // 0x10
     { IND_ZERO_PAGE_Y, inst_ORA, "ORA" },
     { IMPLIED, inst_ASL, "ASL" },
     { IMPLIED, inst_INVALID, "???" },
@@ -129,7 +130,7 @@ const struct instruction INSTRUCTIONS[] = {
     { ABSOLUTE, inst_AND, "AND" },
     { ABSOLUTE, inst_ROL, "ROL" },
     { IMPLIED, inst_INVALID, "???" },
-    { IMPLIED, inst_BMI, "BMI" },       // 0x30
+    { RELATIVE, inst_BMI, "BMI" },      // 0x30
     { IND_ZERO_PAGE_Y, inst_AND, "AND" },
     { IMPLIED, inst_ROL, "ROL" },
     { IMPLIED, inst_INVALID, "???" },
@@ -161,7 +162,7 @@ const struct instruction INSTRUCTIONS[] = {
     { ABSOLUTE, inst_EOR, "EOR" },
     { ABSOLUTE, inst_LSR, "LSR" },
     { IMPLIED, inst_INVALID, "???" },
-    { IMPLIED, inst_BVC, "BVC" },       // 0x50
+    { RELATIVE, inst_BVC, "BVC" },      // 0x50
     { IND_ZERO_PAGE_Y, inst_EOR, "EOR" },
     { IMPLIED, inst_LSR, "LSR" },
     { IMPLIED, inst_INVALID, "???" },
@@ -193,7 +194,7 @@ const struct instruction INSTRUCTIONS[] = {
     { ABSOLUTE, inst_ADC, "ADC" },
     { ABSOLUTE, inst_ROR, "ROR" },
     { IMPLIED, inst_INVALID, "???" },
-    { IMPLIED, inst_BVS, "BVS" },       // 0x70
+    { RELATIVE, inst_BVS, "BVS" },      // 0x70
     { IND_ZERO_PAGE_Y, inst_ADC, "ADC" },
     { IMPLIED, inst_ROR, "ROR" },
     { IMPLIED, inst_INVALID, "???" },
@@ -225,7 +226,7 @@ const struct instruction INSTRUCTIONS[] = {
     { ABSOLUTE, inst_STA, "STA" },
     { ABSOLUTE, inst_STX, "STX" },
     { IMPLIED, inst_INVALID, "???" },
-    { IMPLIED, inst_BCC, "BCC" },       // 0x90
+    { RELATIVE, inst_BCC, "BCC" },      // 0x90
     { IND_ZERO_PAGE_Y, inst_STA, "STA" },
     { IMPLIED, inst_STX, "STX" },
     { IMPLIED, inst_INVALID, "???" },
@@ -257,7 +258,7 @@ const struct instruction INSTRUCTIONS[] = {
     { ABSOLUTE, inst_LDA, "LDA" },
     { ABSOLUTE, inst_LDX, "LDX" },
     { IMPLIED, inst_INVALID, "???" },
-    { IMPLIED, inst_BCS, "BCS" },       // 0xb0
+    { RELATIVE, inst_BCS, "BCS" },      // 0xb0
     { IND_ZERO_PAGE_Y, inst_LDA, "LDA" },
     { IMPLIED, inst_LDX, "LDX" },
     { IMPLIED, inst_INVALID, "???" },
@@ -289,7 +290,7 @@ const struct instruction INSTRUCTIONS[] = {
     { ABSOLUTE, inst_CMP, "CMP" },
     { ABSOLUTE, inst_DEC, "DEC" },
     { IMPLIED, inst_INVALID, "???" },
-    { IMPLIED, inst_BNE, "BNE" },       // 0xd0
+    { RELATIVE, inst_BNE, "BNE" },      // 0xd0
     { IND_ZERO_PAGE_Y, inst_CMP, "CMP" },
     { IMPLIED, inst_DEC, "DEC" },
     { IMPLIED, inst_INVALID, "???" },
@@ -321,7 +322,7 @@ const struct instruction INSTRUCTIONS[] = {
     { ABSOLUTE, inst_SBC, "SBC" },
     { ABSOLUTE, inst_INC, "INC" },
     { IMPLIED, inst_INVALID, "???" },
-    { IMPLIED, inst_BEQ, "BEQ" },       // 0xf0
+    { RELATIVE, inst_BEQ, "BEQ" },      // 0xf0
     { IND_ZERO_PAGE_Y, inst_SBC, "SBC" },
     { IMPLIED, inst_INC, "INC" },
     { IMPLIED, inst_INVALID, "???" },

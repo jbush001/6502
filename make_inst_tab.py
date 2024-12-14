@@ -146,8 +146,7 @@ def main():
     inst_encoding('01001100', ADDR_MODE, 'ABSOLUTE')
     inst_encoding('01101100', ADDR_MODE, 'INDIRECT')
 
-    # Implied instructions
-    implied = [
+    branches = [
         (0x10, 'BPL'),
         (0x30, 'BMI'),
         (0x50, 'BVC'),
@@ -157,6 +156,13 @@ def main():
         (0xd0, 'BNE'),
         (0xf0, 'BEQ'),
         (0x00, 'BRK'),
+    ]
+
+    for opcode, mnemonic in branches:
+        table[opcode] = ['RELATIVE',  mnemonic]
+
+    # Implied instructions
+    implied = [
         (0x20, 'JSR'),
         (0x40, 'RTI'),
         (0x60, 'RTS'),

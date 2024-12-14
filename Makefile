@@ -16,7 +16,7 @@
 
 CFLAGS=-W -Wall -Wno-unused-parameter -g
 
-all: emulator program.bin instruction-test
+all: emulator hello-world.bin instruction-test
 
 test: instruction-test
 	./instruction-test
@@ -34,6 +34,6 @@ instructions.h: make_inst_tab.py
 clean:
 	rm -r instructions.h emulator instruction-test *.gcno *.bin *.lst
 
-program.bin: program.asm
-	dasm program.asm -f3 -lprogram.lst -oprogram.bin
+hello-world.bin: hello-world.asm
+	dasm hello-world.asm -f3 -lhello-world.lst -ohello-world.bin
 

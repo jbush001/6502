@@ -30,7 +30,7 @@ void test_ld() {
     proc.memory[0] = 0xa9; // LDA #$c5
     proc.memory[1] = 0xc5;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0xc5);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 1);
@@ -39,7 +39,7 @@ void test_ld() {
     proc.memory[0] = 0xa9; // LDA #0
     proc.memory[1] = 0;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0);
     TEST_EQ(proc.z, 1);
     TEST_EQ(proc.n, 0);
@@ -48,7 +48,7 @@ void test_ld() {
     proc.memory[0] = 0xa9; // LDA #$24
     proc.memory[1] = 0x24;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.a, 0x24);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -59,7 +59,7 @@ void test_ld() {
     proc.memory[2] = 1;
     proc.memory[256] = 0xa9;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0xa9);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 1);
@@ -69,7 +69,7 @@ void test_ld() {
     proc.memory[1] = 0x20;
     proc.memory[0x20] = 0x52;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0x52);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -81,7 +81,7 @@ void test_ld() {
     proc.x = 3;
     proc.memory[0x105] = 0x8f;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0x8f);
 
     // Absolute indexed
@@ -91,7 +91,7 @@ void test_ld() {
     proc.y = 7;
     proc.memory[0x209] = 0x49;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0x49);
 
     // Zero page indexed
@@ -101,7 +101,7 @@ void test_ld() {
     proc.x = 0x12;
     proc.memory[0x32] = 0x49;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0x49);
 
     // Zero page indirect indexed
@@ -113,7 +113,7 @@ void test_ld() {
     proc.memory[0x21] = 0x3;
     proc.memory[0x307] = 0xce;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0xce);
 
     // Zero page indexed indirect
@@ -125,7 +125,7 @@ void test_ld() {
     proc.memory[0x39] = 0x4;
     proc.memory[0x431] = 0xf5;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0xf5);
 
     // LDX. Group 2.
@@ -133,7 +133,7 @@ void test_ld() {
     proc.memory[0] = 0xa2; // LDX #$24
     proc.memory[1] = 0x24;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.x, 0x24);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -144,7 +144,7 @@ void test_ld() {
     proc.memory[2] = 1;
     proc.memory[256] = 0xa9;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.x, 0xa9);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 1);
@@ -155,7 +155,7 @@ void test_ld() {
     proc.memory[2] = 0;
     proc.memory[0x20] = 0x52;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.x, 0x52);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -167,7 +167,7 @@ void test_ld() {
     proc.y = 0xa;
     proc.memory[0x6a] = 0x71;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.x, 0x71);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -180,7 +180,7 @@ void test_ld() {
     proc.y = 0x4;
     proc.memory[0x387] = 0x96;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.x, 0x96);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 1);
@@ -191,7 +191,7 @@ void test_ld() {
     proc.memory[0] = 0xa0; // LDY #$24
     proc.memory[1] = 0x24;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.y, 0x24);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -202,7 +202,7 @@ void test_ld() {
     proc.memory[2] = 1;
     proc.memory[256] = 0xa9;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.y, 0xa9);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 1);
@@ -213,7 +213,7 @@ void test_ld() {
     proc.memory[2] = 0;
     proc.memory[0x20] = 0x52;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.y, 0x52);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -225,7 +225,7 @@ void test_ld() {
     proc.x = 3;
     proc.memory[0x104] = 0x8f;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.y, 0x8f);
 
     // Zero page indexed
@@ -235,7 +235,7 @@ void test_ld() {
     proc.x = 0x12;
     proc.memory[0x32] = 0x49;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.y, 0x49);
 }
 
@@ -248,7 +248,7 @@ void test_st() {
     proc.memory[0] = 0x8d; // STA $120
     proc.memory[1] = 0x20;
     proc.memory[2] = 0x01;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x120], 0x7b);
 
     // Zero page
@@ -257,7 +257,7 @@ void test_st() {
     proc.memory[1] = 0x21;
     proc.memory[2] = 0x00;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x21], 0xef);
 
     // Absolute indexed
@@ -268,7 +268,7 @@ void test_st() {
     proc.a = 0x95;
     proc.memory[0x105] = 0;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.memory[0x105], 0x95);
 
     // Absolute indexed
@@ -279,7 +279,7 @@ void test_st() {
     proc.a = 0x49;
     proc.memory[0x208] = 0;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x208], 0x49);
 
     // Zero page indexed
@@ -290,7 +290,7 @@ void test_st() {
     proc.x = 0x12;
     proc.memory[0x32] = 0;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x32], 0x49);
 
     // Zero page indirect indexed
@@ -303,7 +303,7 @@ void test_st() {
     proc.memory[0x309] = 0;
     proc.a = 0x97;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x309], 0x97);
 
     // Zero page indexed indirect
@@ -316,7 +316,7 @@ void test_st() {
     proc.a = 0xf5;
     proc.memory[0x431] = 0;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.memory[0x431], 0xf5);
 
     // STX
@@ -327,7 +327,7 @@ void test_st() {
     proc.memory[3] = 0x00;
     proc.x = 0x22;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x120], 0x22);
 
     // Zero page
@@ -336,7 +336,7 @@ void test_st() {
     proc.memory[1] = 0x37;
     proc.memory[2] = 0x00;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x37], 0x44);
 
     // Zero page, Y
@@ -346,7 +346,7 @@ void test_st() {
     proc.x = 0x55;
     proc.y = 0x2;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x45], 0x55);
 
     // STY
@@ -356,7 +356,7 @@ void test_st() {
     proc.memory[1] = 0x41;
     proc.memory[2] = 0x00;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x41], 0x45);
 
     // Zero page
@@ -365,7 +365,7 @@ void test_st() {
     proc.memory[1] = 0x81;
     proc.memory[2] = 0x00;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x81], 0xc3);
 
     // Zero page, X
@@ -375,7 +375,7 @@ void test_st() {
     proc.memory[2] = 0x00;
     proc.x = 0x7;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x88], 0x1d);
 }
 
@@ -387,7 +387,7 @@ void test_adc() {
     proc.memory[0] = 0x69; // ADC #$13
     proc.memory[1] = 0x13;
     proc.a = 0x27;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.a, 0x3a);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -398,7 +398,7 @@ void test_adc() {
     proc.pc = 0;
     proc.c = 1;
     proc.a = 0x27;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.a, 0x3b);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -411,7 +411,7 @@ void test_adc() {
     proc.memory[1] = 192;
     proc.a = 127;
     proc.c = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 63);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -424,7 +424,7 @@ void test_adc() {
     proc.memory[1] = 192;
     proc.a = 128;
     proc.c = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 64);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -437,7 +437,7 @@ void test_adc() {
     proc.memory[1] = 126;
     proc.a = 3;
     proc.c = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 129);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 1);
@@ -450,7 +450,7 @@ void test_adc() {
     proc.a = 23;
     proc.c = 0;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0);
     TEST_EQ(proc.z, 1);
     TEST_EQ(proc.n, 0);
@@ -465,7 +465,7 @@ void test_adc() {
     proc.a = 0x12;
     proc.c = 1;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.a, 0x77);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -483,7 +483,7 @@ void test_sbc() {
     proc.memory[2] = 0;
     proc.a = 0x27;
     proc.c = 1;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.a, 0x14);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -498,7 +498,7 @@ void test_sbc() {
     proc.a = 0x12;
     proc.c = 1;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0xa); // XXX this may be wrong given carry is zero
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -516,7 +516,7 @@ void test_branch() {
     proc.memory[2] = 0x01;
     proc.memory[3] = 0;
     proc.memory[0x103] = 0; // BRK
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 0x104);
 
     // Indirect, unconditional
@@ -528,7 +528,7 @@ void test_branch() {
     proc.memory[0x20] = 0x21; // Indirect address $121
     proc.memory[0x21] = 0x1;
     proc.memory[0x121] = 0; // BRK
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 0x122);
 
     // BCS, taken
@@ -540,105 +540,105 @@ void test_branch() {
     proc.memory[4] = 0x00;
     proc.memory[5] = 0x00;
     proc.c = 1;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 6);
 
     // BCS, not taken
     proc.pc = 0;
     proc.c = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 3);
 
     // BCC, taken
     proc.pc = 0;
     proc.memory[0] = 0x90; // BCC +3
     proc.c = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 6);
 
     // BCC, not taken
     proc.pc = 0;
     proc.memory[0] = 0x90; // BCC +3
     proc.c = 1;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 3);
 
     // BVS, taken
     proc.pc = 0;
     proc.memory[0] = 0x70; // BVS +3
     proc.v = 1;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 6);
 
     // BVS, not taken
     proc.pc = 0;
     proc.v = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 3);
 
     // BVC, taken
     proc.pc = 0;
     proc.memory[0] = 0x50; // BVC +3
     proc.v = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 6);
 
     // BVC, not taken
     proc.pc = 0;
     proc.v = 1;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 3);
 
     // BMI, taken
     proc.pc = 0;
     proc.memory[0] = 0x30; // BMI +3
     proc.n = 1;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 6);
 
     // BMI, not taken
     proc.pc = 0;
     proc.n = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 3);
 
     // BPL, taken
     proc.pc = 0;
     proc.memory[0] = 0x10; // BPL +3
     proc.n = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 6);
 
     // BPL, not taken
     proc.pc = 0;
     proc.n = 1;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 3);
 
     // BEQ, taken
     proc.pc = 0;
     proc.memory[0] = 0xf0; // BEQ +3
     proc.z = 1;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 6);
 
     // BEQ, not taken
     proc.pc = 0;
     proc.z = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 3);
 
     // BNE, taken
     proc.pc = 0;
     proc.memory[0] = 0xd0; // BNE +3
     proc.z = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 6);
 
     // BNE, not taken
     proc.pc = 0;
     proc.z = 1;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 3);
 }
 
@@ -651,7 +651,7 @@ void test_shifts() {
     proc.memory[1] = 0;
     proc.c = 0;
     proc.a = 0x9c;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.a, 0x38);
     TEST_EQ(proc.c, 1);
     TEST_EQ(proc.n, 0);
@@ -661,7 +661,7 @@ void test_shifts() {
     proc.pc = 0;
     proc.c = 1;
     proc.a = 0x9c;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.a, 0x39);
     TEST_EQ(proc.c, 1);
     TEST_EQ(proc.n, 0);
@@ -671,7 +671,7 @@ void test_shifts() {
     proc.pc = 0;
     proc.c = 0;
     proc.a = 0x7c;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0xf8);
     TEST_EQ(proc.c, 0);
     TEST_EQ(proc.n, 1);
@@ -685,7 +685,7 @@ void test_shifts() {
     proc.memory[0x100] = 0xe4;
     proc.pc = 0;
     proc.c = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x100], 0xc8);
     TEST_EQ(proc.c, 1);
     TEST_EQ(proc.n, 1);
@@ -695,7 +695,7 @@ void test_shifts() {
     proc.memory[0x100] = 0x75;
     proc.pc = 0;
     proc.c = 1;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x100], 0xeb);
     TEST_EQ(proc.c, 0);
     TEST_EQ(proc.n, 1);
@@ -705,7 +705,7 @@ void test_shifts() {
     proc.memory[0x100] = 0x80;
     proc.pc = 0;
     proc.c = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0x100], 0);
     TEST_EQ(proc.c, 1);
     TEST_EQ(proc.n, 0);
@@ -717,7 +717,7 @@ void test_shifts() {
     proc.pc = 0;
     proc.c = 1;
     proc.a = 0x9d;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0xce);
     TEST_EQ(proc.c, 1);
     TEST_EQ(proc.n, 1);
@@ -729,7 +729,7 @@ void test_shifts() {
     proc.pc = 0;
     proc.c = 1;
     proc.a = 0x9d;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.a, 0x4e);
     TEST_EQ(proc.c, 1);
     TEST_EQ(proc.n, 0);
@@ -741,7 +741,7 @@ void test_shifts() {
     proc.pc = 0;
     proc.c = 1;
     proc.a = 0x9d;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.a, 0x3a);
     TEST_EQ(proc.c, 1);
     TEST_EQ(proc.n, 0);
@@ -756,7 +756,7 @@ void test_logical() {
     proc.memory[1] = 0xa5;
     proc.a = 0xc3;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0x81);
     TEST_EQ(proc.c, 0);
     TEST_EQ(proc.n, 1);
@@ -766,7 +766,7 @@ void test_logical() {
     proc.memory[1] = 0x91;
     proc.a = 0x18;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0x99);
     TEST_EQ(proc.c, 0);
     TEST_EQ(proc.n, 1);
@@ -776,7 +776,7 @@ void test_logical() {
     proc.memory[1] = 0x91;
     proc.a = 0x80;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.a, 0x11);
     TEST_EQ(proc.c, 0);
     TEST_EQ(proc.n, 0);
@@ -795,7 +795,7 @@ void test_jsr_rts() {
     proc.memory[4] = 0; // BRK
     proc.memory[5] = 0; // BRK
     proc.memory[0x30] = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 0x31);
     TEST_EQ(proc.s, 0xfd);
     TEST_EQ(proc.memory[0x1fe], 0x3);
@@ -812,7 +812,7 @@ void test_jsr_rts() {
     proc.memory[0x1c2] = 0x12;
     proc.memory[0x1234] = 0;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 0x1235);
     TEST_EQ(proc.s, 0xc2);
 }
@@ -825,7 +825,7 @@ void test_stack() {
     proc.memory[0] = 0x48; // PHA
     proc.memory[1] = 0;
     proc.a = 0xe2;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.s, 0xfe);
     TEST_EQ(proc.memory[0x1ff], 0xe2);
 
@@ -833,7 +833,7 @@ void test_stack() {
     proc.memory[0] = 0x68; // PLA
     proc.a = 0;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.s, 0xff);
     TEST_EQ((uint8_t) proc.a, 0xe2);
     TEST_EQ(proc.n, 1);
@@ -849,7 +849,7 @@ void test_transfer() {
     proc.a = 0x8d;
     proc.x = 0;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0x8d);
     TEST_EQ((uint8_t) proc.x, 0x8d);
     TEST_EQ(proc.n, 1);
@@ -859,7 +859,7 @@ void test_transfer() {
     proc.a = 0;
     proc.x = 0x8d;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.a, 0);
     TEST_EQ(proc.x, 0);
     TEST_EQ(proc.n, 0);
@@ -870,7 +870,7 @@ void test_transfer() {
     proc.a = 0;
     proc.x = 0x8d;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0x8d);
     TEST_EQ((uint8_t) proc.x, 0x8d);
     TEST_EQ(proc.n, 1);
@@ -881,7 +881,7 @@ void test_transfer() {
     proc.s = 0;
     proc.x = 0xd6;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.s, 0xd6);
     TEST_EQ((uint8_t) proc.x, 0xd6);
     TEST_EQ(proc.n, 1);
@@ -892,7 +892,7 @@ void test_transfer() {
     proc.s = 0x6b;
     proc.x = 0;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.s, 0x6b);
     TEST_EQ((uint8_t) proc.x, 0x6b);
     TEST_EQ(proc.n, 0);
@@ -903,7 +903,7 @@ void test_transfer() {
     proc.a = 0x8f;
     proc.y = 0;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0x8f);
     TEST_EQ((uint8_t) proc.y, 0x8f);
     TEST_EQ(proc.n, 1);
@@ -914,7 +914,7 @@ void test_transfer() {
     proc.a = 0;
     proc.y = 0x14;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.a, 0x14);
     TEST_EQ((uint8_t) proc.y, 0x14);
     TEST_EQ(proc.n, 0);
@@ -929,7 +929,7 @@ void test_inc_dec() {
     proc.memory[0] = 0xe8; // INX
     proc.memory[1] = 0;
     proc.x = 0x23;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.x, 0x24);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -937,7 +937,7 @@ void test_inc_dec() {
     // Increment to negative
     proc.x = 0x7f;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.x, 0x80);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 1);
@@ -945,7 +945,7 @@ void test_inc_dec() {
     // Increment to zero
     proc.x = 0xff;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.x, 0x0);
     TEST_EQ(proc.z, 1);
     TEST_EQ(proc.n, 0);
@@ -955,7 +955,7 @@ void test_inc_dec() {
     proc.memory[1] = 0;
     proc.x = 0x37;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.x, 0x36);
 
     // Increment Y
@@ -963,7 +963,7 @@ void test_inc_dec() {
     proc.memory[1] = 0;
     proc.y = 0x23;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.y, 0x24);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 0);
@@ -973,7 +973,7 @@ void test_inc_dec() {
     proc.memory[1] = 0;
     proc.y = 0x37;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ((uint8_t) proc.y, 0x36);
 
     // Increment memory location
@@ -982,7 +982,7 @@ void test_inc_dec() {
     proc.memory[2] = 0;
     proc.memory[0xf0] = 0x82;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0xf0], 0x83);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.n, 1);
@@ -993,7 +993,7 @@ void test_inc_dec() {
     proc.memory[2] = 0;
     proc.memory[0xf7] = 0x1;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.memory[0xf7], 0);
     TEST_EQ(proc.z, 1);
     TEST_EQ(proc.n, 0);
@@ -1006,35 +1006,35 @@ void test_set_clear_flags() {
     proc.memory[0] = 0x18; // CLC
     proc.memory[1] = 0;
     proc.c = 1;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.c, 0);
 
     proc.memory[0] = 0x38; // SEC
     proc.memory[1] = 0;
     proc.pc = 0;
     proc.c = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.c, 1);
 
     proc.memory[0] = 0xf8; // SED
     proc.memory[1] = 0;
     proc.pc = 0;
     proc.d = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.d, 1);
 
     proc.memory[0] = 0xd8; // CLD
     proc.memory[1] = 0;
     proc.pc = 0;
     proc.d = 1;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.d, 0);
 
     proc.memory[0] = 0xb8; // CLV
     proc.memory[1] = 0;
     proc.pc = 0;
     proc.v = 1;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.v, 0);
 }
 
@@ -1048,7 +1048,7 @@ void test_compare() {
     proc.memory[1] = 0x77;
     proc.memory[2] = 0;
     proc.a = 0x76;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.c, 0);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.a, 0x76);
@@ -1056,7 +1056,7 @@ void test_compare() {
     // A = operand
     proc.a = 0x77;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.c, 1);
     TEST_EQ(proc.z, 1);
     TEST_EQ(proc.a, 0x77);
@@ -1064,7 +1064,7 @@ void test_compare() {
     // A > operand
     proc.a = 0x78;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.c, 1);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.a, 0x78);
@@ -1073,7 +1073,7 @@ void test_compare() {
     proc.memory[0] = 0xe0; // CPX #$77
     proc.x = 0x76;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.c, 0);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.x, 0x76);
@@ -1081,7 +1081,7 @@ void test_compare() {
     // X > operand
     proc.x = 0x78;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.c, 1);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.x, 0x78);
@@ -1090,7 +1090,7 @@ void test_compare() {
     proc.memory[0] = 0xc0; // CPY #$77
     proc.y = 0x76;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.c, 0);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.y, 0x76);
@@ -1098,7 +1098,7 @@ void test_compare() {
     // Y > operand
     proc.y = 0x78;
     proc.pc = 0;
-    run_emulator(&proc);
+    run_emulator(&proc, 0);
     TEST_EQ(proc.c, 1);
     TEST_EQ(proc.z, 0);
     TEST_EQ(proc.y, 0x78);

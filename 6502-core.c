@@ -26,7 +26,11 @@ uint8_t read_mem_u8(struct m6502 *proc, uint16_t addr) {
 }
 
 void write_mem_u8(struct m6502 *proc, uint16_t addr, uint8_t val) {
-    proc->memory[addr] = val;
+    if (addr == 0xfffa) {
+        printf("%c", val);
+    } else {
+        proc->memory[addr] = val;
+    }
 }
 
 uint16_t read_mem_u16(struct m6502 *proc, uint16_t addr) {
@@ -427,12 +431,15 @@ void inst_RTI(struct m6502 *proc, enum address_mode mode) {
     assert(0); // Not implemented
 }
 
-void run_emulator(struct m6502 *proc) {
+void run_emulator(struct m6502 *proc, int single_step) {
     proc->halt = 0;
     while (!proc->halt) {
         int opcode = read_mem_u8(proc, proc->pc++);
         const struct instruction *inst = &INSTRUCTIONS[opcode];
         inst->func(proc, inst->mode);
+        if (single_step) {
+            break;
+        }
     }
 }
 
@@ -518,10 +525,15 @@ int disassemble(struct m6502 *proc, uint16_t base_addr, int length) {
                     proc->memory[addr] | (proc->memory[addr + 1] << 8));
                 addr += 2;
                 break;
+            case RELATIVE:
+                snprintf(operands, sizeof(operands), "%04x",
+                    addr + 1 + (int8_t) proc->memory[addr]);
+                addr++;
+                break;
         }
 
         char line[128];
-        snprintf(line, sizeof(line), "%04x", start_addr);
+        snprintf(line, sizeof(line), "%c%04x", start_addr == proc->pc ? '>' : ' ', start_addr);
         for (int i = start_addr; i < addr; i++) {
             snprintf(line + strlen(line), sizeof(line) - strlen(line), " %02x",
                 proc->memory[i]);
