@@ -792,13 +792,13 @@ void test_jsr_rts() {
     proc.memory[1] = 0xea;
     proc.memory[2] = 0x20; // JSR $30
     proc.memory[3] = 0x30;
-    proc.memory[4] = 0; // BRK
+    proc.memory[4] = 0;
     proc.memory[5] = 0; // BRK
     proc.memory[0x30] = 0;
     run_emulator(&proc, 0);
     TEST_EQ(proc.pc, 0x31);
     TEST_EQ(proc.s, 0xfd);
-    TEST_EQ(proc.memory[0x1fe], 0x3);
+    TEST_EQ(proc.memory[0x1fe], 0x5);
     TEST_EQ(proc.memory[0x1ff], 0x0);
 
     // Return

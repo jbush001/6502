@@ -416,6 +416,7 @@ void inst_JMP(struct m6502 *proc, enum address_mode mode) {
 
 void inst_JSR(struct m6502 *proc, enum address_mode mode) {
     uint16_t target = read_mem_u16(proc, proc->pc);
+    proc->pc += 2;
     write_mem_u8(proc, proc->s-- + 0x100, proc->pc >> 8);
     write_mem_u8(proc, proc->s-- + 0x100, proc->pc & 0xff);
     proc->pc = target;
