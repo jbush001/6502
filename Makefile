@@ -16,11 +16,12 @@
 
 CFLAGS=-W -Wall -Wno-unused-parameter -g
 
-all: emulator hello-world.bin instruction-test
+all: emulator instruction-test
 
 test: instruction-test
 	./instruction-test
 	gcov instruction-test-6502-core.c
+	python3 run-test.py test-*.asm
 
 emulator: instructions.h emulator-main.c 6502-core.c
 	cc $(CFLAGS) emulator-main.c 6502-core.c -o emulator
@@ -33,7 +34,4 @@ instructions.h: make_inst_tab.py
 
 clean:
 	rm -r instructions.h emulator instruction-test *.gcno *.bin *.lst
-
-hello-world.bin: hello-world.asm
-	dasm hello-world.asm -f3 -lhello-world.lst -ohello-world.bin
 

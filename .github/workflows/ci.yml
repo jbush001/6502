@@ -13,5 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: install tools
+      run: sudo apt install dasm
     - name: make test
       run: make test
