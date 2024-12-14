@@ -33,5 +33,5 @@ instructions.h: make_inst_tab.py
 	python3 make_inst_tab.py
 
 clean:
-	rm -r instructions.h emulator instruction-test *.gcno *.bin *.lst
+	rm -f instructions.h emulator instruction-test *.gcno *.gcda *.bin *.lst
 
