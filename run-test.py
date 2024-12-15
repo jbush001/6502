@@ -19,11 +19,15 @@ import os
 import sys
 
 def run_test(filename):
-    binname = os.path.splitext(filename)[0] + '.bin'
-    subprocess.run(f'dasm {filename} -f3 -o{binname}',
-                    shell=True, check=True, timeout=10,
-                    stdout=subprocess.PIPE)
-    result = subprocess.run(f'./emulator {binname}', shell=True,
+    try:
+        subprocess.run(f'dasm {filename} -f3 -otest.bin',
+                        shell=True, check=True, timeout=10,
+                        stdout=subprocess.PIPE)
+    except subprocess.CalledProcessError as err:
+        print('assemble error ' + str(err.stdout, 'UTF-8'))
+        raise
+
+    result = subprocess.run('./emulator test.bin', shell=True,
                             check=True,
                             timeout=10, stdout=subprocess.PIPE)
     output = str(result.stdout, encoding='ASCII')
@@ -36,7 +40,8 @@ def run_test(filename):
                 check_pattern = line[check_offs + len(check_prefix) + 1:].strip()
                 got = output.find(check_pattern, search_offset)
                 if got == -1:
-                    raise Exception('could not find check pattern ' + check_pattern)
+                    raise Exception('could not find check pattern ' + check_pattern +
+                                    ' all output\n' + output)
 
                 search_offset = got + len(check_pattern)
 

@@ -14,6 +14,8 @@
 ; limitations under the License.
 ;
 
+CONSOLE_OUT = $fffa
+
                     processor 6502
 
                     seg code
@@ -66,7 +68,7 @@ done:               rts
 print_array:        ldy #0
                     ldx array_len
 loop1:              lda (array_ptr),Y
-                    sta $fffa
+                    sta CONSOLE_OUT
                     iny
                     dex
                     bne loop1

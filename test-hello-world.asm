@@ -14,20 +14,19 @@
 ; limitations under the License.
 ;
 
+CONSOLE_OUT = $fffa
+
                     processor 6502
 
                     seg code
                     org $0000
 reset:              ldx #<str
-                    jsr print_str
-                    brk
-
 print_str:          lda ,X
                     beq done
-                    sta $fffa
+                    sta CONSOLE_OUT
                     inx
                     jmp print_str
-done:               rts
+done:               brk
 
 str:                dc "Hello World"
                     dc.b 12, 13, 0
