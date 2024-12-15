@@ -728,9 +728,9 @@ void test_shifts() {
     proc.memory[1] = 0;
     proc.pc = 0;
     proc.c = 1;
-    proc.a = 0x9d;
+    proc.a = 0x6d;
     run_emulator(&proc, 0);
-    TEST_EQ(proc.a, 0x4e);
+    TEST_EQ(proc.a, 0x36);
     TEST_EQ(proc.c, 1);
     TEST_EQ(proc.n, 0);
     TEST_EQ(proc.z, 0);

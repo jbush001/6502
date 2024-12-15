@@ -128,7 +128,7 @@ void inst_NOP(struct m6502 *proc, enum address_mode mode) {
     }
 
 void inst_LSR(struct m6502 *proc, enum address_mode mode) {
-    UNARY_OP((old_val >> 1); proc->c = (old_val >> 7) & 1);
+    UNARY_OP((old_val >> 1); proc->c = old_val & 1);
 }
 
 void inst_ASL(struct m6502 *proc, enum address_mode mode) {
